@@ -4,7 +4,14 @@ import React, { useCallback, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bars3Icon, BuildingOffice2Icon, PlusCircleIcon } from "@heroicons/react/24/outline";
+import {
+  Bars3Icon,
+  BuildingOffice2Icon,
+  HomeIcon,
+  MagnifyingGlassIcon,
+  PlusCircleIcon,
+  UserIcon,
+} from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
 
@@ -18,11 +25,22 @@ export const menuLinks: HeaderMenuLink[] = [
   {
     label: "Home",
     href: "/",
+    icon: <HomeIcon className="h-4 w-4" />,
   },
   {
-    label: "Properties",
+    label: "Search",
     href: "/properties",
+    icon: <MagnifyingGlassIcon className="h-4 w-4" />,
+  },
+  {
+    label: "Owned Properties",
+    href: "/owned-properties",
     icon: <BuildingOffice2Icon className="h-4 w-4" />,
+  },
+  {
+    label: "My Listings",
+    href: "/my-listings",
+    icon: <UserIcon className="h-4 w-4" />,
   },
 ];
 
@@ -101,10 +119,15 @@ export const Header = () => {
         </ul>
       </div>
       <div className="navbar-end flex-grow mr-4 gap-4">
-        <Link href="/list-property" className="btn btn-secondary flex items-center gap-2">
+        <Link
+          href="/list-property"
+          passHref
+          className="hover:bg-secondary hover:shadow-md focus:!bg-secondary active:!text-neutral py-1.5 px-3 text-sm rounded-full gap-2 grid grid-flow-col"
+        >
           <PlusCircleIcon className="h-6 w-6" />
-          List Property
+          <span>List Property</span>
         </Link>
+
         <RainbowKitCustomConnectButton />
         <FaucetButton />
       </div>
