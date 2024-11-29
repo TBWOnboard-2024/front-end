@@ -70,6 +70,7 @@ export default function Properties() {
       </div>
     `);
     const map = new maplibregl.Map({
+      // @ts-ignore
       container: mapContainer.current,
       style: "https://tiles.openfreemap.org/styles/bright",
       ...viewState,
