@@ -1,9 +1,11 @@
+import Image from "next/image";
 import type { NextPage } from "next";
+import lilhelpersBuilding from "~~/components/img/lilhelpers-building.png";
 
 const Home: NextPage = () => {
   return (
     <>
-      <div className="flex items-center flex-col flex-grow pt-10">Hello</div>
+      <Image src={lilhelpersBuilding} alt="image" width={1000} height={1000} />
     </>
   );
 };
