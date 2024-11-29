@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { PropertyCard } from "../../components/PropertyCard";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 
@@ -61,10 +62,24 @@ export default function Properties() {
   });
 
   useEffect(() => {
+    const popup = new maplibregl.Popup({ offset: 25 }).setHTML(`
+      <div class="p-2">
+        <h3 class="font-bold">${EXAMPLE_PROPERTIES[0].title}</h3>
+        <p class="text-sm">${EXAMPLE_PROPERTIES[0].address}</p>
+        <p class="text-primary font-bold">$${EXAMPLE_PROPERTIES[0].price.toLocaleString()}</p>
+      </div>
+    `);
     const map = new maplibregl.Map({
       container: mapContainer.current,
       style: "https://tiles.openfreemap.org/styles/bright",
       ...viewState,
+    });
+
+    map.addControl(new maplibregl.NavigationControl());
+    const marker = new maplibregl.Marker({ color: "#93BBFB" }).setLngLat([121.5654, 25.033]).setPopup(popup).addTo(map);
+
+    marker.getElement().addEventListener("click", () => {
+      console.log("clicked");
     });
 
     return () => {
@@ -73,8 +88,22 @@ export default function Properties() {
   }, []);
 
   return (
-    <div className="h-screen w-screen absolute top-0 left-0">
-      <div className="h-screen w-screen absolute top-0 left-0" id="map" ref={mapContainer} />
+    <div className="flex h-screen">
+      <div className="w-1/3 overflow-y-auto p-4 space-y-4">
+        {EXAMPLE_PROPERTIES.map(property => (
+          <PropertyCard
+            key={property.id}
+            property={property}
+            onClick={() => {
+              console.log("clicked");
+            }}
+            isSelected={false}
+          />
+        ))}
+      </div>
+      <div className="w-2/3 relative">
+        <div className="h-screen w-screen absolute inset-0" id="map" ref={mapContainer} />
+      </div>
     </div>
   );
 }
