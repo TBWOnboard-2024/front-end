@@ -10,7 +10,7 @@ const nextConfig = {
     ignoreDuringBuilds: process.env.NEXT_PUBLIC_IGNORE_BUILD_ERROR === "true",
   },
   images: {
-    domains: ["picsum.photos"],
+    remotePatterns: [{ hostname: "picsum.photos" }],
   },
   webpack: config => {
     config.resolve.fallback = { fs: false, net: false, tls: false };
