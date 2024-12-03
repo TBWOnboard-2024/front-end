@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "../../hooks/scaffold-eth";
 import { parseEther } from "viem";
-import { useAccount, useReadContract } from "wagmi";
+import { useAccount } from "wagmi";
 import { BuildingOffice2Icon, HomeIcon } from "@heroicons/react/24/outline";
 
 type PropertyType = "Apartment" | "House" | "Ground" | "Commercial";
