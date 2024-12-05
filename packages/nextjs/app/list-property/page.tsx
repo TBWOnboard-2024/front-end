@@ -50,9 +50,6 @@ export default function ListPropertyPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would handle the form submission
-    console.log("Form submitted:", form);
-    console.log(parseEther("0.1", "wei"), "Test");
 
     try {
       await propertyNFTWriteContractAsync({
