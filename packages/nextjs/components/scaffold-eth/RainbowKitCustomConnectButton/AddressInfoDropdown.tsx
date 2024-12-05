@@ -59,6 +59,19 @@ export const AddressInfoDropdown = ({
           tabIndex={0}
           className="dropdown-content menu z-[2] p-2 mt-2 shadow-center shadow-accent bg-base-200 rounded-box gap-1"
         >
+          <li className={selectingNetwork ? "hidden" : ""}>
+            <button className="menu-item btn-sm !rounded-xl flex gap-3 py-3" type="button">
+              <ArrowTopRightOnSquareIcon className="h-6 w-4 ml-2 sm:ml-0" />
+              <a
+                target="_blank"
+                href={blockExplorerAddressLink}
+                rel="noopener noreferrer"
+                className="whitespace-nowrap"
+              >
+                My Properties
+              </a>
+            </button>
+          </li>
           <NetworkOptions hidden={!selectingNetwork} />
           <li className={selectingNetwork ? "hidden" : ""}>
             {addressCopied ? (

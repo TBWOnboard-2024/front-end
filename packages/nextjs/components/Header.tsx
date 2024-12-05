@@ -4,14 +4,7 @@ import React, { useCallback, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Bars3Icon,
-  BuildingOffice2Icon,
-  HomeIcon,
-  MagnifyingGlassIcon,
-  PlusCircleIcon,
-  UserIcon,
-} from "@heroicons/react/24/outline";
+import { Bars3Icon, PlusCircleIcon } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
 
@@ -25,22 +18,18 @@ export const menuLinks: HeaderMenuLink[] = [
   {
     label: "Home",
     href: "/",
-    icon: <HomeIcon className="h-4 w-4" />,
   },
   {
-    label: "Search",
+    label: "Properties",
     href: "/properties",
-    icon: <MagnifyingGlassIcon className="h-4 w-4" />,
   },
   {
     label: "Owned Properties",
     href: "/owned-properties",
-    icon: <BuildingOffice2Icon className="h-4 w-4" />,
   },
   {
     label: "My Listings",
     href: "/my-listings",
-    icon: <UserIcon className="h-4 w-4" />,
   },
 ];
 

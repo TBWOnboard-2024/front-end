@@ -46,26 +46,18 @@ export default function ListPropertyPage() {
     images: [],
   });
 
-  const { address } = useAccount();
-
   const { writeContractAsync: propertyNFTWriteContractAsync } = useScaffoldWriteContract("PropertyNFT");
-  const { data } = useScaffoldReadContract({
-    contractName: "tBUSD",
-    functionName: "balanceOf",
-    args: [address],
-  });
-
-  console.log(data);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // Here you would handle the form submission
     console.log("Form submitted:", form);
-    console.log(parseEther("0.1"));
+    console.log(parseEther("0.1", "wei"), "Test");
+
     try {
       await propertyNFTWriteContractAsync({
         functionName: "mint",
-        args: [parseEther("0.1"), false, BigInt(1), "Test Address", BigInt(2), BigInt(1), BigInt(120)],
+        args: [parseEther("0.1", "wei"), false, BigInt(1), "Test Address", BigInt(2), BigInt(1), BigInt(120)],
       });
     } catch (e) {
       console.error("Error setting greeting:", e);

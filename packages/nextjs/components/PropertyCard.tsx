@@ -27,7 +27,13 @@ export const PropertyCard = ({ property, onClick, isSelected }: PropertyCardProp
       onClick={onClick}
     >
       <figure className="h-48 relative">
-        <Image src={property.imageUrl} alt={property.title} className="w-full h-full object-cover" />
+        <Image
+          src={property.imageUrl}
+          alt={property.title}
+          width={1000}
+          height={1000}
+          className="w-full h-full object-cover"
+        />
         <div className="absolute top-2 right-2 badge badge-primary text-lg font-bold">
           ${property.price.toLocaleString()}
         </div>
