@@ -23,14 +23,6 @@ export const menuLinks: HeaderMenuLink[] = [
     label: "Properties",
     href: "/properties",
   },
-  {
-    label: "Owned Properties",
-    href: "/owned-properties",
-  },
-  {
-    label: "My Listings",
-    href: "/my-listings",
-  },
 ];
 
 export const HeaderMenuLinks = () => {

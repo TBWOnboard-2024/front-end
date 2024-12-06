@@ -8,6 +8,7 @@ import {
   ArrowLeftOnRectangleIcon,
   ArrowTopRightOnSquareIcon,
   ArrowsRightLeftIcon,
+  BuildingOffice2Icon,
   CheckCircleIcon,
   ChevronDownIcon,
   DocumentDuplicateIcon,
@@ -61,13 +62,8 @@ export const AddressInfoDropdown = ({
         >
           <li className={selectingNetwork ? "hidden" : ""}>
             <button className="menu-item btn-sm !rounded-xl flex gap-3 py-3" type="button">
-              <ArrowTopRightOnSquareIcon className="h-6 w-4 ml-2 sm:ml-0" />
-              <a
-                target="_blank"
-                href={blockExplorerAddressLink}
-                rel="noopener noreferrer"
-                className="whitespace-nowrap"
-              >
+              <BuildingOffice2Icon className="h-6 w-4 ml-2 sm:ml-0" />
+              <a href={"/my-properties"} rel="noopener noreferrer" className="whitespace-nowrap">
                 My Properties
               </a>
             </button>
