@@ -5,7 +5,10 @@ import { useScaffoldWatchContractEvent, useScaffoldWriteContract } from "../../h
 import { parseEther } from "viem";
 import { BuildingOffice2Icon, HomeIcon } from "@heroicons/react/24/outline";
 
-type PropertyType = "Apartment" | "House" | "Ground" | "Commercial";
+enum PropertyType {
+  Apartment = 0,
+  House = 1,
+}
 type ListingType = "sale" | "rent";
 
 interface ListingForm {
@@ -28,7 +31,7 @@ interface ListingForm {
 
 export default function ListPropertyPage() {
   const [form, setForm] = useState<ListingForm>({
-    propertyType: "Apartment",
+    propertyType: PropertyType.Apartment,
     listingType: "rent",
     canBid: false,
     title: "",
@@ -90,9 +93,9 @@ export default function ListPropertyPage() {
         <div className="grid grid-cols-4 gap-4">
           <button
             type="button"
-            onClick={() => setForm({ ...form, propertyType: "Apartment" })}
+            onClick={() => setForm({ ...form, propertyType: PropertyType.Apartment })}
             className={`flex flex-col items-center p-4 rounded-lg border-2 ${
-              form.propertyType === "Apartment" ? "border-primary bg-primary/10" : "border-base-200"
+              form.propertyType === PropertyType.Apartment ? "border-primary bg-primary/10" : "border-base-200"
             }`}
           >
             <BuildingOffice2Icon className="h-6 w-6" />
@@ -100,9 +103,9 @@ export default function ListPropertyPage() {
           </button>
           <button
             type="button"
-            onClick={() => setForm({ ...form, propertyType: "House" })}
+            onClick={() => setForm({ ...form, propertyType: PropertyType.House })}
             className={`flex flex-col items-center p-4 rounded-lg border-2 ${
-              form.propertyType === "House" ? "border-primary bg-primary/10" : "border-base-200"
+              form.propertyType === PropertyType.House ? "border-primary bg-primary/10" : "border-base-200"
             }`}
           >
             <HomeIcon className="h-6 w-6" />
