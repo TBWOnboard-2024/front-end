@@ -2,37 +2,17 @@
 
 import { useState } from "react";
 import { useScaffoldWatchContractEvent, useScaffoldWriteContract } from "../../hooks/scaffold-eth";
+import { pinataService } from "../../services/pinata";
+import { ListingForm, PropertyType } from "../../types/all-types";
+import { notification } from "../../utils/scaffold-eth";
+import { toast } from "react-hot-toast";
 import { parseEther } from "viem";
 import { BuildingOffice2Icon, HomeIcon } from "@heroicons/react/24/outline";
-
-enum PropertyType {
-  Apartment = 0,
-  House = 1,
-}
-type ListingType = "sale" | "rent";
-
-interface ListingForm {
-  propertyType: PropertyType;
-  listingType: ListingType;
-  canBid: boolean;
-  title: string;
-  rooms: number;
-  bathrooms: number;
-  compartmentalization: string;
-  comfort: string;
-  floor: string;
-  usableSurface: number;
-  price: number;
-  location: string;
-  constructionYear: string;
-  description: string;
-  images: File[];
-}
 
 export default function ListPropertyPage() {
   const [form, setForm] = useState<ListingForm>({
     propertyType: PropertyType.Apartment,
-    listingType: "rent",
+    // listingType: "rent",
     canBid: false,
     title: "",
     rooms: 1,
@@ -48,16 +28,37 @@ export default function ListPropertyPage() {
     images: [],
   });
 
-  const { writeContractAsync: propertyNFTWriteContractAsync } = useScaffoldWriteContract("PropertyNFT");
+  const { writeContractAsync } = useScaffoldWriteContract("PropertyNFT");
 
   useScaffoldWatchContractEvent({
     contractName: "PropertyNFT",
     eventName: "Minted",
-    onLogs: logs => {
-      logs.map(log => {
+    onLogs: async logs => {
+      logs.map(async log => {
         const { tokenId, to } = log.args;
         console.log("Token ID:", tokenId);
         console.log("To:", to);
+
+        try {
+          const loadingToastId = notification.loading("Uploading property metadata to IPFS...");
+
+          const imageUrls = await pinataService.uploadImages(form.images);
+          const metadata = pinataService.generateMetadata(tokenId?.toString() || "", form, imageUrls);
+          const tokenUri = await pinataService.uploadMetadata(tokenId?.toString() || "", metadata);
+
+          notification.remove(loadingToastId);
+          notification.success("Property metadata uploaded successfully!");
+
+          console.log("Token URI:", tokenUri);
+        } catch (error) {
+          notification.error(
+            <>
+              <p className="font-bold mt-0 mb-1">Error uploading property metadata</p>
+              <p className="m-0">Please try again.</p>
+            </>,
+          );
+          console.error("Error uploading metadata:", error);
+        }
       });
     },
   });
@@ -67,7 +68,7 @@ export default function ListPropertyPage() {
     console.log(form);
 
     try {
-      await propertyNFTWriteContractAsync({
+      await writeContractAsync({
         functionName: "mint",
         args: [
           parseEther(form.price.toString()),
@@ -79,8 +80,8 @@ export default function ListPropertyPage() {
           BigInt(form.usableSurface),
         ],
       });
-    } catch (e) {
-      console.error("Error setting greeting:", e);
+    } catch (error) {
+      console.error("Error handling property submission:", error);
     }
   };
 

@@ -14,6 +14,7 @@ const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
         <ThemeProvider enableSystem>
           <ScaffoldEthAppWithProviders>{children}</ScaffoldEthAppWithProviders>
         </ThemeProvider>
+        {/* <Script src="https://visgl.github.io/react-google-maps/scripts/examples.js" strategy="beforeInteractive" /> */}
       </body>
     </html>
   );
