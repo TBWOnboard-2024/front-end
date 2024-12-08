@@ -10,7 +10,7 @@ const nextConfig = {
     ignoreDuringBuilds: process.env.NEXT_PUBLIC_IGNORE_BUILD_ERROR === "true",
   },
   images: {
-    remotePatterns: [{ hostname: "picsum.photos" }],
+    remotePatterns: [{ hostname: "picsum.photos" }, { hostname: "chocolate-tough-manatee-914.mypinata.cloud" }],
   },
   webpack: config => {
     config.resolve.fallback = { fs: false, net: false, tls: false };
