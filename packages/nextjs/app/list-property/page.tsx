@@ -42,9 +42,30 @@ export default function ListPropertyPage() {
         try {
           const loadingToastId = notification.loading("Uploading property metadata to IPFS...");
 
+          // Upload images to Pinata
           const imageUrls = await pinataService.uploadImages(form.images);
+
+          // Generate metadata
           const metadata = pinataService.generateMetadata(tokenId?.toString() || "", form, imageUrls);
+
+          // Upload metadata to Pinata
           const tokenUri = await pinataService.uploadMetadata(tokenId?.toString() || "", metadata);
+
+          // Save the same metadata to MongoDB
+          const dbResponse = await fetch("/api/properties", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              tokenId: tokenId?.toString(),
+              ...metadata, // This spreads all the metadata fields (name, description, image, attributes, properties)
+            }),
+          });
+
+          if (!dbResponse.ok) {
+            throw new Error("Failed to save property to database");
+          }
 
           notification.remove(loadingToastId);
           notification.success("Property metadata uploaded successfully!");
