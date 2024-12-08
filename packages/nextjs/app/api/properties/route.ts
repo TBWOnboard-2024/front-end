@@ -24,24 +24,30 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request) {
   try {
-    // Get the ID from the search params if it exists
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
+    const ids = searchParams.get("ids");
 
-    if (id) {
-      // If ID is provided, fetch single property
-      const property = await prisma.property.findUnique({
-        where: { id: parseInt(id) },
+    if (ids) {
+      // Convert comma-separated string to array of numbers
+      const idArray = ids.split(",").map(id => parseInt(id.trim()));
+
+      // Fetch multiple properties
+      const properties = await prisma.property.findMany({
+        where: {
+          tokenId: {
+            in: idArray,
+          },
+        },
       });
 
-      if (!property) {
-        return NextResponse.json({ error: "Property not found" }, { status: 404 });
+      if (properties.length === 0) {
+        return NextResponse.json({ error: "No properties found" }, { status: 404 });
       }
 
-      return NextResponse.json(property);
+      return NextResponse.json(properties);
     }
 
-    // If no ID, fetch all properties (existing functionality)
+    // If no IDs provided, fetch all properties
     const properties = await prisma.property.findMany();
     return NextResponse.json(properties);
   } catch (error) {
