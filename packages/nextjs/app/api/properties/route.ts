@@ -22,8 +22,26 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    // Get the ID from the search params if it exists
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+
+    if (id) {
+      // If ID is provided, fetch single property
+      const property = await prisma.property.findUnique({
+        where: { id: parseInt(id) },
+      });
+
+      if (!property) {
+        return NextResponse.json({ error: "Property not found" }, { status: 404 });
+      }
+
+      return NextResponse.json(property);
+    }
+
+    // If no ID, fetch all properties (existing functionality)
     const properties = await prisma.property.findMany();
     return NextResponse.json(properties);
   } catch (error) {
