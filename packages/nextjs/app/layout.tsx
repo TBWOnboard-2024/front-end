@@ -5,7 +5,7 @@ import { ThemeProvider } from "~~/components/ThemeProvider";
 import "~~/styles/globals.css";
 import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 
-export const metadata = getMetadata({ title: "RWA App", description: "Built on BNB Chain" });
+export const metadata = getMetadata({ title: "RealtyHub", description: "Built on BNB Chain" });
 
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -14,7 +14,6 @@ const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
         <ThemeProvider enableSystem>
           <ScaffoldEthAppWithProviders>{children}</ScaffoldEthAppWithProviders>
         </ThemeProvider>
-        {/* <Script src="https://visgl.github.io/react-google-maps/scripts/examples.js" strategy="beforeInteractive" /> */}
       </body>
     </html>
   );
