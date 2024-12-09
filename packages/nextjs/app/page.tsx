@@ -1,9 +1,10 @@
 import type { NextPage } from "next";
+import Hero from "~~/components/landing/Hero";
 
 const Home: NextPage = () => {
   return (
-    <div className="flex flex-col items-center">
-      <h1>Hello World</h1>
+    <div>
+      <Hero />
     </div>
   );
 };
