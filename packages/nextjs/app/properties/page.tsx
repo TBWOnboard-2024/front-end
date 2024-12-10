@@ -55,7 +55,7 @@ const EXAMPLE_PROPERTIES = [
 
 export default function Properties() {
   const mapContainer = useRef(null);
-  const [viewState, setViewState] = useState({
+  const [viewState] = useState({
     center: [121.5654, 25.033],
     zoom: 11,
     pitch: 0,
@@ -86,7 +86,7 @@ export default function Properties() {
     return () => {
       map.remove();
     };
-  }, []);
+  }, [viewState]);
 
   return (
     <div className="flex h-screen">

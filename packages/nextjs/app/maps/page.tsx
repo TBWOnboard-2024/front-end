@@ -31,7 +31,7 @@ export default function Maps() {
   const [hoverId, setHoverId] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  const [anchorPoint, setAnchorPoint] = useState("BOTTOM" as AnchorPointName);
+  const [anchorPoint] = useState("BOTTOM" as AnchorPointName);
   const [selectedMarker, setSelectedMarker] = useState<google.maps.marker.AdvancedMarkerElement | null>(null);
   const [infoWindowShown, setInfoWindowShown] = useState(false);
 
@@ -156,7 +156,7 @@ export default function Maps() {
   );
 }
 
-export const AdvancedMarkerWithRef = (
+const AdvancedMarkerWithRef = (
   props: AdvancedMarkerProps & {
     onMarkerClick: (marker: google.maps.marker.AdvancedMarkerElement) => void;
   },

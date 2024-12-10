@@ -35,7 +35,7 @@ export async function GET(request: Request) {
       const properties = await prisma.property.findMany({
         where: {
           tokenId: {
-            in: idArray,
+            in: idArray.map(String),
           },
         },
       });

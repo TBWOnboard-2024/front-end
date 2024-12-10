@@ -1,10 +1,12 @@
 import Image from "next/image";
+// import chek from "~~/components/img/chek.png";
+import kevo from "~~/components/img/kevo.jpg";
 
 const teamMembers = [
   {
     name: "Kevo",
     role: "Fullstack Developer",
-    image: "https://picsum.photos/seed/team1/300/300",
+    image: kevo,
     linkedin: "https://linkedin.com",
   },
   {
