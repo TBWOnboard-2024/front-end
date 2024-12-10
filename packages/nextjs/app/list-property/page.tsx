@@ -5,7 +5,6 @@ import { useScaffoldWatchContractEvent, useScaffoldWriteContract } from "../../h
 import { pinataService } from "../../services/pinata";
 import { ListingForm, PropertyType } from "../../types/all-types";
 import { notification } from "../../utils/scaffold-eth";
-import { toast } from "react-hot-toast";
 import { parseEther } from "viem";
 import { BuildingOffice2Icon, HomeIcon } from "@heroicons/react/24/outline";
 
@@ -50,6 +49,8 @@ export default function ListPropertyPage() {
 
           // Upload metadata to Pinata
           const tokenUri = await pinataService.uploadMetadata(tokenId?.toString() || "", metadata);
+
+          // Set the token URI
 
           // Save the same metadata to MongoDB
           const dbResponse = await fetch("/api/properties", {
