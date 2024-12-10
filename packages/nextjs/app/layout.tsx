@@ -1,5 +1,6 @@
 import "@rainbow-me/rainbowkit/styles.css";
 import "maplibre-gl/dist/maplibre-gl.css";
+import { Footer } from "~~/components/Footer";
 import { ScaffoldEthAppWithProviders } from "~~/components/ScaffoldEthAppWithProviders";
 import { ThemeProvider } from "~~/components/ThemeProvider";
 import "~~/styles/globals.css";
@@ -13,6 +14,7 @@ const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
       <body>
         <ThemeProvider enableSystem>
           <ScaffoldEthAppWithProviders>{children}</ScaffoldEthAppWithProviders>
+          <Footer />
         </ThemeProvider>
       </body>
     </html>

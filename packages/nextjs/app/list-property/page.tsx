@@ -91,7 +91,7 @@ export default function ListPropertyPage() {
 
     try {
       await writeContractAsync({
-        functionName: "mint",
+        functionName: "createProperty",
         args: [
           parseEther(form.price.toString()),
           form.canBid,

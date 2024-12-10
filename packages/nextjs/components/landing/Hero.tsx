@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import property1 from "~~/components/img/hero/1.png";
 import property2 from "~~/components/img/hero/2.png";
 import map from "~~/components/img/hero/map.png";
@@ -13,9 +14,10 @@ export default function Hero() {
             A great platform to buy, sell, or even rent your properties without any commisions.
           </p>
         </div>
-        <div className="flex gap-[80px]">
-          <button className="btn btn-primary px-8 py-4">Buy a Property</button>
-          <button className="btn btn-outline px-8 py-4">Rent a Property</button>
+        <div className="flex gap-[80px] mt-5">
+          <Link href="/properties" className="btn btn-secondary btn-lg">
+            Explore Properties
+          </Link>
         </div>
       </div>
       <div className="w-1/2 relative">
