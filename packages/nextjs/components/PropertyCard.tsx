@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 interface Property {
   id: string;
@@ -8,7 +9,10 @@ interface Property {
   bedrooms: number;
   bathrooms: number;
   address: string;
-  coordinates: number[];
+  coordinates: {
+    lat: number;
+    lng: number;
+  };
   imageUrl: string;
 }
 
@@ -45,6 +49,15 @@ export const PropertyCard = ({ property, onClick, isSelected }: PropertyCardProp
           <span>{property.size} m²</span>
           <span>{property.bedrooms} beds</span>
           <span>{property.bathrooms} baths</span>
+        </div>
+        <div className="card-actions justify-end mt-2">
+          <Link
+            href={`/properties/${property.id}`}
+            className="btn btn-primary btn-sm"
+            onClick={e => e.stopPropagation()} // Prevent triggering the parent onClick
+          >
+            View Details
+          </Link>
         </div>
       </div>
     </div>

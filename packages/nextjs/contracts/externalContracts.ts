@@ -1302,7 +1302,7 @@ const externalContracts = {
       ],
     },
     Marketplace_Fractional: {
-      address: "",
+      address: "0xe6871185F770a347148E09281C9DBED063b1a23C",
       abi: [
         {
           inputs: [],
