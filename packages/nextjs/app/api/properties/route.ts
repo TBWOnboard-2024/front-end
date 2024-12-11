@@ -17,6 +17,7 @@ export async function POST(request: Request) {
         totalShares: body.isShared ? body.totalShares : null,
         pricePerShare: body.isShared ? body.pricePerShare : null,
         propertyToken: body.isShared ? body.propertyToken : null,
+        listed: body.listed,
       },
     });
 
@@ -30,6 +31,7 @@ export async function POST(request: Request) {
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
+    const limit = searchParams.get("limit");
     const ids = searchParams.get("ids");
 
     if (ids) {
@@ -49,6 +51,16 @@ export async function GET(request: Request) {
         return NextResponse.json({ error: "No properties found" }, { status: 404 });
       }
 
+      return NextResponse.json(properties);
+    }
+
+    if (limit) {
+      const properties = await prisma.properties.findMany({
+        take: parseInt(limit),
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
       return NextResponse.json(properties);
     }
 

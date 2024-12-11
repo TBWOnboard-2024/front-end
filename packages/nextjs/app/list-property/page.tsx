@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useScaffoldWatchContractEvent, useScaffoldWriteContract } from "../../hooks/scaffold-eth";
 import { pinataService } from "../../services/pinata";
 import { ListingForm, PropertyType } from "../../types/all-types";
@@ -62,6 +63,8 @@ export default function ListPropertyPage() {
             tokenId?.toString() || "",
             form,
             imageUrls,
+            lister,
+            true,
             propertyToken?.toString(),
           );
           console.log("Generated metadata:", metadata);
@@ -87,6 +90,8 @@ export default function ListPropertyPage() {
               tokenId: tokenId?.toString(),
               ...metadata,
               isShared: true,
+              listed: true,
+              seller: lister,
               canBid: form.canBid,
               totalShares: 1000,
               pricePerShare: Number(pricePerShare),
@@ -150,7 +155,7 @@ export default function ListPropertyPage() {
 
           // Generate metadata
           console.log("Generating metadata with:", { tokenId: tokenId?.toString(), form, imageUrls });
-          const metadata = pinataService.generateMetadata(tokenId?.toString() || "", form, imageUrls);
+          const metadata = pinataService.generateMetadata(tokenId?.toString() || "", form, imageUrls, seller, false);
           console.log("Generated metadata:", metadata);
 
           // Upload metadata to Pinata
@@ -174,6 +179,8 @@ export default function ListPropertyPage() {
               tokenId: tokenId?.toString(),
               ...metadata,
               canBid: form.canBid,
+              listed: false,
+              seller: seller,
             }),
           });
 
@@ -361,6 +368,45 @@ export default function ListPropertyPage() {
               Upload Images
             </label>
             <p className="text-sm mt-2">Maximum 10 pictures. Supported formats: PNG, JPG. Maximum size 10MB</p>
+
+            {/* Image Preview Section */}
+            {form.images.length > 0 && (
+              <div className="grid grid-cols-3 gap-4 mt-4">
+                {Array.from(form.images).map((image, index) => (
+                  <div key={index} className="relative group">
+                    <Image
+                      src={URL.createObjectURL(image)}
+                      alt={`Preview ${index + 1}`}
+                      className="w-full h-32 object-cover rounded-lg"
+                      width={500}
+                      height={500}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newImages = Array.from(form.images);
+                        newImages.splice(index, 1);
+                        setForm({ ...form, images: newImages });
+                      }}
+                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
