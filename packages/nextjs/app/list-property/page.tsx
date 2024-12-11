@@ -38,49 +38,49 @@ export default function ListPropertyPage() {
         console.log("Token ID:", tokenId);
         console.log("To:", to);
 
-        // try {
-        //   const loadingToastId = notification.loading("Uploading property metadata to IPFS...");
+        try {
+          const loadingToastId = notification.loading("Uploading property metadata to IPFS...");
 
-        //   // Upload images to Pinata
-        //   const imageUrls = await pinataService.uploadImages(form.images);
+          // Upload images to Pinata
+          const imageUrls = await pinataService.uploadImages(form.images);
 
-        //   // Generate metadata
-        //   const metadata = pinataService.generateMetadata(tokenId?.toString() || "", form, imageUrls);
+          // Generate metadata
+          const metadata = pinataService.generateMetadata(tokenId?.toString() || "", form, imageUrls);
 
-        //   // Upload metadata to Pinata
-        //   const tokenUri = await pinataService.uploadMetadata(tokenId?.toString() || "", metadata);
+          // Upload metadata to Pinata
+          const tokenUri = await pinataService.uploadMetadata(tokenId?.toString() || "", metadata);
 
-        //   // Set the token URI
+          // TODO: Set the token URI
 
-        //   // Save the same metadata to MongoDB
-        //   const dbResponse = await fetch("/api/properties", {
-        //     method: "POST",
-        //     headers: {
-        //       "Content-Type": "application/json",
-        //     },
-        //     body: JSON.stringify({
-        //       tokenId: tokenId?.toString(),
-        //       ...metadata, // This spreads all the metadata fields (name, description, image, attributes, properties)
-        //     }),
-        //   });
+          // Save the same metadata to MongoDB
+          const dbResponse = await fetch("/api/properties", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              tokenId: tokenId?.toString(),
+              ...metadata, // This spreads all the metadata fields (name, description, image, attributes, properties)
+            }),
+          });
 
-        //   if (!dbResponse.ok) {
-        //     throw new Error("Failed to save property to database");
-        //   }
+          if (!dbResponse.ok) {
+            throw new Error("Failed to save property to database");
+          }
 
-        //   notification.remove(loadingToastId);
-        //   notification.success("Property metadata uploaded successfully!");
+          notification.remove(loadingToastId);
+          notification.success("Property metadata uploaded successfully!");
 
-        //   console.log("Token URI:", tokenUri);
-        // } catch (error) {
-        //   notification.error(
-        //     <>
-        //       <p className="font-bold mt-0 mb-1">Error uploading property metadata</p>
-        //       <p className="m-0">Please try again.</p>
-        //     </>,
-        //   );
-        //   console.error("Error uploading metadata:", error);
-        // }
+          console.log("Token URI:", tokenUri);
+        } catch (error) {
+          notification.error(
+            <>
+              <p className="font-bold mt-0 mb-1">Error uploading property metadata</p>
+              <p className="m-0">Please try again.</p>
+            </>,
+          );
+          console.error("Error uploading metadata:", error);
+        }
       });
     },
   });

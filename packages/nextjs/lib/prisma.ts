@@ -9,3 +9,12 @@ export const prisma =
   });
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+
+prisma
+  .$connect()
+  .then(() => {
+    console.log("Successfully connected to database");
+  })
+  .catch(error => {
+    console.error("Failed to connect to database:", error);
+  });

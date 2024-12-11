@@ -4,7 +4,7 @@ import { prisma } from "~~/lib/prisma";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const property = await prisma.property.create({
+    const property = await prisma.properties.create({
       data: {
         tokenId: body.tokenId,
         name: body.name,
@@ -32,7 +32,7 @@ export async function GET(request: Request) {
       const idArray = ids.split(",").map(id => parseInt(id.trim()));
 
       // Fetch multiple properties
-      const properties = await prisma.property.findMany({
+      const properties = await prisma.properties.findMany({
         where: {
           tokenId: {
             in: idArray.map(String),
@@ -48,7 +48,7 @@ export async function GET(request: Request) {
     }
 
     // If no IDs provided, fetch all properties
-    const properties = await prisma.property.findMany();
+    const properties = await prisma.properties.findMany();
     return NextResponse.json(properties);
   } catch (error) {
     console.error("Error fetching properties:", error);
