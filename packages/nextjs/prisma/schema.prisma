@@ -8,13 +8,17 @@ generator client {
 }
 
 model Properties {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  tokenId     String   @unique
-  name        String
-  description String
-  image       String
-  attributes  Json
-  properties  Json
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  tokenId         String   @unique
+  name            String
+  description     String
+  image           String
+  attributes      Json
+  properties      Json
+  isShared        Boolean  @default(false)
+  totalShares     Int?     // Only for fractional properties
+  pricePerShare   Float?   // Only for fractional properties
+  propertyToken   String?  // ERC20 token contract address for fractional properties
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
