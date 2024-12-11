@@ -71,6 +71,11 @@ export default function ListPropertyPage() {
           const tokenUri = await pinataService.uploadMetadata(tokenId?.toString() || "", metadata);
           console.log("Token URI received:", tokenUri);
 
+          // await writeContractAsync({
+          //   functionName: "setTokenURI",
+          //   args: [tokenId, tokenUri],
+          // });
+
           // Save to MongoDB
           console.log("Saving to MongoDB...");
           const dbResponse = await fetch("/api/properties", {
@@ -152,6 +157,11 @@ export default function ListPropertyPage() {
           console.log("Uploading metadata to Pinata...");
           const tokenUri = await pinataService.uploadMetadata(tokenId?.toString() || "", metadata);
           console.log("Token URI received:", tokenUri);
+
+          // await writeContractAsync({
+          //   functionName: "setTokenURI",
+          //   args: [tokenId, tokenUri],
+          // });
 
           // Save to MongoDB
           console.log("Saving to MongoDB...");

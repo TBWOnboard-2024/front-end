@@ -13,6 +13,7 @@ export async function POST(request: Request) {
         attributes: body.attributes,
         properties: body.properties,
         isShared: body.isShared,
+        canBid: body.canBid,
         totalShares: body.isShared ? body.totalShares : null,
         pricePerShare: body.isShared ? body.pricePerShare : null,
         propertyToken: body.isShared ? body.propertyToken : null,
