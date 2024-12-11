@@ -16,6 +16,7 @@ model Properties {
   attributes      Json
   properties      Json
   isShared        Boolean  @default(false)
+  canBid          Boolean  @default(false)
   totalShares     Int?     // Only for fractional properties
   pricePerShare   Float?   // Only for fractional properties
   propertyToken   String?  // ERC20 token contract address for fractional properties

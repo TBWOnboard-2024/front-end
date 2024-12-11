@@ -82,6 +82,7 @@ export default function ListPropertyPage() {
               tokenId: tokenId?.toString(),
               ...metadata,
               isShared: true,
+              canBid: form.canBid,
               totalShares: 1000,
               pricePerShare: Number(pricePerShare),
               propertyToken: propertyToken?.toString(),
@@ -113,25 +114,33 @@ export default function ListPropertyPage() {
     contractName: "Marketplace",
     eventName: "PropertyListed",
     onLogs: async logs => {
+      console.log("PropertyListed event received. Logs:", logs);
+
       logs.map(async log => {
         const { seller, tokenId, price, canBid } = log.args;
-        console.log("PropertyListed", seller, tokenId, price, canBid);
+        console.log("PropertyListed details:", { seller, tokenId, price, canBid });
 
         try {
           const loadingToastId = notification.loading("Uploading property metadata to IPFS...");
+          console.log("Current form state:", form);
 
           // Upload images to Pinata
+          console.log("Uploading images:", form.images);
           const imageUrls = await pinataService.uploadImages(form.images);
+          console.log("Image URLs received:", imageUrls);
 
           // Generate metadata
+          console.log("Generating metadata with:", { tokenId: tokenId?.toString(), form, imageUrls });
           const metadata = pinataService.generateMetadata(tokenId?.toString() || "", form, imageUrls);
+          console.log("Generated metadata:", metadata);
 
           // Upload metadata to Pinata
+          console.log("Uploading metadata to Pinata...");
           const tokenUri = await pinataService.uploadMetadata(tokenId?.toString() || "", metadata);
+          console.log("Token URI received:", tokenUri);
 
-          // TODO: Set the token URI
-
-          // Save the same metadata to MongoDB
+          // Save to MongoDB
+          console.log("Saving to MongoDB...");
           const dbResponse = await fetch("/api/properties", {
             method: "POST",
             headers: {
@@ -139,26 +148,29 @@ export default function ListPropertyPage() {
             },
             body: JSON.stringify({
               tokenId: tokenId?.toString(),
-              ...metadata, // This spreads all the metadata fields (name, description, image, attributes, properties)
+              ...metadata,
+              canBid: form.canBid,
             }),
           });
 
           if (!dbResponse.ok) {
+            console.error("MongoDB save failed:", await dbResponse.json());
             throw new Error("Failed to save property to database");
           }
 
+          console.log("MongoDB save successful");
           notification.remove(loadingToastId);
           notification.success("Property metadata uploaded successfully!");
 
           console.log("Token URI:", tokenUri);
         } catch (error) {
+          console.error("Error uploading metadata:", error);
           notification.error(
             <>
               <p className="font-bold mt-0 mb-1">Error uploading property metadata</p>
               <p className="m-0">Please try again.</p>
             </>,
           );
-          console.error("Error uploading metadata:", error);
         }
       });
     },
