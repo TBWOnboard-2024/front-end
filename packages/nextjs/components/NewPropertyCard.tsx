@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { Bath, BedSingle, Ruler } from "lucide-react";
 import propertyImage from "~~/components/img/property.jpg";
 
 export const NewPropertyCard = () => {
@@ -26,20 +27,19 @@ export const NewPropertyCard = () => {
         <div className="flex items-center gap-8 pt-4">
           {/* Bedrooms */}
           <div className="flex items-center gap-2">
-            <svg className="w-6 h-6 text-blue-400" /* Add bed icon SVG here */ />
-            <span className="text-xl">4</span>
+            <BedSingle size={24} className="text-blue-400" /> <span className="text-xl">4</span>
           </div>
 
           {/* Bathrooms */}
           <div className="flex items-center gap-2">
-            <svg className="w-6 h-6 text-blue-400" /* Add bath icon SVG here */ />
+            <Bath size={24} className="text-blue-400" />
             <span className="text-xl">2</span>
           </div>
 
           {/* Size */}
           <div className="flex items-center gap-2">
-            <svg className="w-6 h-6 text-blue-400" /* Add size icon SVG here */ />
-            <span className="text-xl">6×7.5 m²</span>
+            <Ruler size={24} className="text-blue-400" />
+            <span className="text-xl">7.5 m²</span>
           </div>
         </div>
       </div>

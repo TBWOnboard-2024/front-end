@@ -9,27 +9,23 @@ import house from "~~/components/img/features/house.png";
 const features = [
   {
     icon: feature1,
-    title: "Find your dream home",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+    title: "Property Listing",
+    description: "Sellers can list properties with options to enable bids and fractional shares",
   },
   {
     icon: feature2,
-    title: "Find your dream home",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+    title: "BNPL System",
+    description: "Buyers can purchase or rent properties with a small down payment and monthly installments",
   },
   {
     icon: feature3,
-    title: "Find your dream home",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+    title: "Collateralized Payments",
+    description: "Supporting cryptocurrencies, NFTs, and tokenized assets as collateral.",
   },
   {
     icon: feature4,
-    title: "Find your dream home",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+    title: "Marketplace Features",
+    description: "Direct purchase, bid management, and instant payment processing",
   },
 ];
 
@@ -40,7 +36,7 @@ export default function Features() {
         <Image src={house} alt="house" width={400} height={400} className="absolute bottom-0 right-0 w-2/3 md:w-auto" />
         <div className="space-y-4 relative z-10">
           <h3 className="text-xl md:text-2xl font-bold">The new way to find your dream home</h3>
-          <p className="text-base md:text-lg text-gray-500">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+          <p className="text-base md:text-lg text-gray-500">Check out our properties and find your dream home today!</p>
           <Link href="/properties" className="btn btn-primary btn-sm">
             Browse Properties
           </Link>
