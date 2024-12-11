@@ -1,5 +1,4 @@
 import "@rainbow-me/rainbowkit/styles.css";
-import "maplibre-gl/dist/maplibre-gl.css";
 import { Footer } from "~~/components/Footer";
 import { ScaffoldEthAppWithProviders } from "~~/components/ScaffoldEthAppWithProviders";
 import { ThemeProvider } from "~~/components/ThemeProvider";
