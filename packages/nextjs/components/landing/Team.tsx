@@ -1,5 +1,5 @@
 import Image from "next/image";
-// import chek from "~~/components/img/chek.png";
+import chek from "~~/components/img/chek.png";
 import kevo from "~~/components/img/kevo.jpg";
 
 const teamMembers = [
@@ -7,13 +7,13 @@ const teamMembers = [
     name: "Kevo",
     role: "Fullstack Developer",
     image: kevo,
-    linkedin: "https://linkedin.com",
+    linkedin: "https://www.linkedin.com/in/kerimberdi-agayev/",
   },
   {
     name: "Chek",
     role: "Smart Contract Developer",
-    image: "https://picsum.photos/seed/team2/300/300",
-    linkedin: "https://linkedin.com",
+    image: chek,
+    linkedin: "https://www.linkedin.com/in/chek-zida-555301ab/",
   },
 ];
 
@@ -36,7 +36,7 @@ export default function Team() {
                 rel="noopener noreferrer"
                 className="text-primary hover:text-primary-focus"
               >
-                LinkedIn Profile
+                Profile
               </a>
             </div>
           ))}

@@ -11,7 +11,7 @@ import { BuildingOffice2Icon, HomeIcon } from "@heroicons/react/24/outline";
 export default function ListPropertyPage() {
   const [form, setForm] = useState<ListingForm>({
     propertyType: PropertyType.Apartment,
-    // listingType: "rent",
+    isShared: false,
     canBid: false,
     title: "",
     rooms: 1,
@@ -38,70 +38,83 @@ export default function ListPropertyPage() {
         console.log("Token ID:", tokenId);
         console.log("To:", to);
 
-        try {
-          const loadingToastId = notification.loading("Uploading property metadata to IPFS...");
+        // try {
+        //   const loadingToastId = notification.loading("Uploading property metadata to IPFS...");
 
-          // Upload images to Pinata
-          const imageUrls = await pinataService.uploadImages(form.images);
+        //   // Upload images to Pinata
+        //   const imageUrls = await pinataService.uploadImages(form.images);
 
-          // Generate metadata
-          const metadata = pinataService.generateMetadata(tokenId?.toString() || "", form, imageUrls);
+        //   // Generate metadata
+        //   const metadata = pinataService.generateMetadata(tokenId?.toString() || "", form, imageUrls);
 
-          // Upload metadata to Pinata
-          const tokenUri = await pinataService.uploadMetadata(tokenId?.toString() || "", metadata);
+        //   // Upload metadata to Pinata
+        //   const tokenUri = await pinataService.uploadMetadata(tokenId?.toString() || "", metadata);
 
-          // Set the token URI
+        //   // Set the token URI
 
-          // Save the same metadata to MongoDB
-          const dbResponse = await fetch("/api/properties", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              tokenId: tokenId?.toString(),
-              ...metadata, // This spreads all the metadata fields (name, description, image, attributes, properties)
-            }),
-          });
+        //   // Save the same metadata to MongoDB
+        //   const dbResponse = await fetch("/api/properties", {
+        //     method: "POST",
+        //     headers: {
+        //       "Content-Type": "application/json",
+        //     },
+        //     body: JSON.stringify({
+        //       tokenId: tokenId?.toString(),
+        //       ...metadata, // This spreads all the metadata fields (name, description, image, attributes, properties)
+        //     }),
+        //   });
 
-          if (!dbResponse.ok) {
-            throw new Error("Failed to save property to database");
-          }
+        //   if (!dbResponse.ok) {
+        //     throw new Error("Failed to save property to database");
+        //   }
 
-          notification.remove(loadingToastId);
-          notification.success("Property metadata uploaded successfully!");
+        //   notification.remove(loadingToastId);
+        //   notification.success("Property metadata uploaded successfully!");
 
-          console.log("Token URI:", tokenUri);
-        } catch (error) {
-          notification.error(
-            <>
-              <p className="font-bold mt-0 mb-1">Error uploading property metadata</p>
-              <p className="m-0">Please try again.</p>
-            </>,
-          );
-          console.error("Error uploading metadata:", error);
-        }
+        //   console.log("Token URI:", tokenUri);
+        // } catch (error) {
+        //   notification.error(
+        //     <>
+        //       <p className="font-bold mt-0 mb-1">Error uploading property metadata</p>
+        //       <p className="m-0">Please try again.</p>
+        //     </>,
+        //   );
+        //   console.error("Error uploading metadata:", error);
+        // }
       });
     },
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(form);
 
     try {
-      await writeContractAsync({
-        functionName: "createProperty",
-        args: [
-          parseEther(form.price.toString()),
-          form.canBid,
-          BigInt(form.propertyType),
-          form.location,
-          BigInt(form.rooms),
-          BigInt(form.bathrooms),
-          BigInt(form.usableSurface),
-        ],
-      });
+      if (form.isShared) {
+        await writeContractAsync({
+          functionName: "createPropertyShared",
+          args: [
+            parseEther(form.price.toString()),
+            BigInt(form.propertyType),
+            form.location,
+            BigInt(form.rooms),
+            BigInt(form.bathrooms),
+            BigInt(form.usableSurface),
+          ],
+        });
+      } else {
+        await writeContractAsync({
+          functionName: "createProperty",
+          args: [
+            parseEther(form.price.toString()),
+            form.canBid,
+            BigInt(form.propertyType),
+            form.location,
+            BigInt(form.rooms),
+            BigInt(form.bathrooms),
+            BigInt(form.usableSurface),
+          ],
+        });
+      }
     } catch (error) {
       console.error("Error handling property submission:", error);
     }
@@ -136,29 +149,56 @@ export default function ListPropertyPage() {
           </button>
           {/* Add similar buttons for Ground and Commercial */}
         </div>
-        {/* Bid or Direct Sale*/}
+
+        {/* Property Ownership Type */}
         <div className="flex gap-4">
           <label className="flex items-center gap-2">
             <input
               type="radio"
-              name="canBid"
-              checked={form.canBid}
-              onChange={() => setForm({ ...form, canBid: !form.canBid })}
+              name="isShared"
+              checked={!form.isShared}
+              onChange={() => setForm({ ...form, isShared: false })}
               className="radio radio-primary"
             />
-            Bid
+            Whole Property
           </label>
           <label className="flex items-center gap-2">
             <input
               type="radio"
-              name="canBid"
-              checked={!form.canBid}
-              onChange={() => setForm({ ...form, canBid: !form.canBid })}
+              name="isShared"
+              checked={form.isShared}
+              onChange={() => setForm({ ...form, isShared: true })}
               className="radio radio-primary"
             />
-            Direct Sale
+            Fractional Property
           </label>
         </div>
+
+        {/* Bid or Direct Sale - Only show for non-fractional properties */}
+        {!form.isShared && (
+          <div className="flex gap-4">
+            <label className="flex items-center gap-2">
+              <input
+                type="radio"
+                name="canBid"
+                checked={form.canBid}
+                onChange={() => setForm({ ...form, canBid: !form.canBid })}
+                className="radio radio-primary"
+              />
+              Bid
+            </label>
+            <label className="flex items-center gap-2">
+              <input
+                type="radio"
+                name="canBid"
+                checked={!form.canBid}
+                onChange={() => setForm({ ...form, canBid: !form.canBid })}
+                className="radio radio-primary"
+              />
+              Direct Sale
+            </label>
+          </div>
+        )}
 
         {/* Listing Type */}
         {/* <div className="flex gap-4">

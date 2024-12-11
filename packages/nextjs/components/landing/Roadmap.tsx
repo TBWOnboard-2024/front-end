@@ -2,25 +2,25 @@ import { CheckCircleIcon } from "@heroicons/react/24/outline";
 
 const roadmapItems = [
   {
-    date: "Q1 2024",
+    date: "Q4 2024",
     title: "Platform Launch",
     description: "Initial release of RealtyHub with core features for property listing and viewing",
     completed: true,
   },
   {
-    date: "Q2 2024",
+    date: "Q1 2025",
     title: "Smart Contracts Integration",
     description: "Implementation of property tokenization and smart contract-based transactions",
     completed: false,
   },
   {
-    date: "Q3 2024",
+    date: "Q2 2025",
     title: "Advanced Features",
     description: "Introduction of bidding system and automated rental payments",
     completed: false,
   },
   {
-    date: "Q4 2024",
+    date: "Q3 2025",
     title: "Global Expansion",
     description: "Platform expansion to multiple countries and integration with local real estate regulations",
     completed: false,
