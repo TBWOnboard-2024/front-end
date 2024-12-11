@@ -1895,6 +1895,7 @@ __metadata:
     next: ~14.2.11
     next-nprogress-bar: ~2.3.13
     next-themes: ~0.3.0
+    pinata: ^1.9.1
     pinata-web3: ^0.5.2
     postcss: ~8.4.45
     prettier: ~3.3.3
@@ -8952,6 +8953,16 @@ __metadata:
     is-ipfs: ^8.0.4
     node-fetch: ^3.3.1
   checksum: 1fba90a8f6d088e480337b206daf177b98baf063208c8f826d930fabfd7af5cd2ce6a143a4f129777cb9ed76ce2e12433f8296c43c3ec8998c9456959977ff1a
+  languageName: node
+  linkType: hard
+
+"pinata@npm:^1.9.1":
+  version: 1.9.1
+  resolution: "pinata@npm:1.9.1"
+  dependencies:
+    is-ipfs: ^8.0.4
+    node-fetch: ^3.3.1
+  checksum: 5a27f7e5cdb8e28c4313ac1a7803de6a585dca83a4e15f8a4951a9dfaaa5e5d1de7cd9b4836e565494a130e89b3ad1bef4409b3887038bcc23b257fd75bf70fd
   languageName: node
   linkType: hard
 

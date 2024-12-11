@@ -1,12 +1,18 @@
+import { PinataSDK as PinataFiles } from "pinata";
 import { PinataSDK } from "pinata-web3";
 
 const PINATA_GATEWAY = "chocolate-tough-manatee-914.mypinata.cloud";
 
 export class PinataService {
   private pinata: PinataSDK;
-
+  private pinataFiles: PinataFiles;
   constructor() {
     this.pinata = new PinataSDK({
+      pinataJwt: process.env.NEXT_PUBLIC_PINIATA_JWT,
+      pinataGateway: PINATA_GATEWAY,
+    });
+
+    this.pinataFiles = new PinataFiles({
       pinataJwt: process.env.NEXT_PUBLIC_PINIATA_JWT,
       pinataGateway: PINATA_GATEWAY,
     });
@@ -42,10 +48,10 @@ export class PinataService {
         const randomName = crypto.randomUUID();
         const extension = image.name.split(".").pop();
         const newFile = new File([image], `${randomName}.${extension}`, { type: image.type });
-        return this.pinata.upload.file(newFile);
+        return this.pinataFiles.upload.file(newFile);
       });
       const uploads = await Promise.all(uploadPromises);
-      return uploads.map(upload => `https://${PINATA_GATEWAY}/ipfs/${upload.IpfsHash}`);
+      return uploads.map(upload => `https://${PINATA_GATEWAY}/ipfs/${upload.cid}`);
     } catch (error) {
       console.error("Error uploading images to Pinata:", error);
       throw error;

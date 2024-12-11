@@ -97,6 +97,20 @@ export default function ListPropertyPage() {
           console.log("MongoDB save successful");
           notification.remove(loadingToastId);
           notification.success("Property metadata uploaded successfully!");
+          // reset form
+          setForm({
+            propertyType: PropertyType.Apartment,
+            isShared: false,
+            canBid: false,
+            title: "",
+            rooms: 1,
+            bathrooms: 1,
+            usableSurface: 0,
+            price: 0,
+            location: "",
+            description: "",
+            images: [],
+          });
         } catch (error) {
           console.error("Detailed error in property listing process:", error);
           notification.error(
@@ -161,6 +175,20 @@ export default function ListPropertyPage() {
           console.log("MongoDB save successful");
           notification.remove(loadingToastId);
           notification.success("Property metadata uploaded successfully!");
+          // reset form
+          setForm({
+            propertyType: PropertyType.Apartment,
+            isShared: false,
+            canBid: false,
+            title: "",
+            rooms: 1,
+            bathrooms: 1,
+            usableSurface: 0,
+            price: 0,
+            location: "",
+            description: "",
+            images: [],
+          });
 
           console.log("Token URI:", tokenUri);
         } catch (error) {
