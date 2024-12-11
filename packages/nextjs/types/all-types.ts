@@ -11,13 +11,9 @@ export interface ListingForm {
   title: string;
   rooms: number;
   bathrooms: number;
-  compartmentalization: string;
-  comfort: string;
-  floor: string;
   usableSurface: number;
   price: number;
   location: string;
-  constructionYear: string;
   description: string;
   images: File[];
 }

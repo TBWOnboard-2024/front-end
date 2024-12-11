@@ -16,13 +16,9 @@ export default function ListPropertyPage() {
     title: "",
     rooms: 1,
     bathrooms: 1,
-    compartmentalization: "",
-    comfort: "",
-    floor: "",
     usableSurface: 0,
     price: 0,
     location: "",
-    constructionYear: "",
     description: "",
     images: [],
   });
@@ -33,28 +29,50 @@ export default function ListPropertyPage() {
     contractName: "Marketplace_Fractional",
     eventName: "PropertyListed",
     onLogs: async logs => {
+      console.log("PropertyListed event received. Logs:", logs);
+
       logs.map(async log => {
         const { lister, price, pricePerShare, propertyToken, tokenId } = log.args;
-        console.log("PropertyListed Fractional", lister, price, pricePerShare, propertyToken, tokenId);
+        console.log("PropertyListed Fractional details:", {
+          lister,
+          price,
+          pricePerShare,
+          propertyToken,
+          tokenId,
+        });
 
         try {
           const loadingToastId = notification.loading("Uploading property metadata to IPFS...");
+          console.log("Current form state:", form);
 
           // Upload images to Pinata
+          console.log("Uploading images:", form.images);
           const imageUrls = await pinataService.uploadImages(form.images);
+          console.log("Image URLs received:", imageUrls);
 
-          // Generate metadata
+          // Generate metadata with propertyToken
+          console.log("Generating metadata with:", {
+            tokenId: tokenId?.toString(),
+            form,
+            imageUrls,
+            propertyToken: propertyToken?.toString(),
+          });
+
           const metadata = pinataService.generateMetadata(
             tokenId?.toString() || "",
             form,
             imageUrls,
             propertyToken?.toString(),
           );
+          console.log("Generated metadata:", metadata);
 
           // Upload metadata to Pinata
+          console.log("Uploading metadata to Pinata...");
           const tokenUri = await pinataService.uploadMetadata(tokenId?.toString() || "", metadata);
+          console.log("Token URI received:", tokenUri);
 
-          // Save to MongoDB with fractional ownership details
+          // Save to MongoDB
+          console.log("Saving to MongoDB...");
           const dbResponse = await fetch("/api/properties", {
             method: "POST",
             headers: {
@@ -64,26 +82,28 @@ export default function ListPropertyPage() {
               tokenId: tokenId?.toString(),
               ...metadata,
               isShared: true,
-              totalShares: 1000, // You might want to make this configurable
+              totalShares: 1000,
               pricePerShare: Number(pricePerShare),
               propertyToken: propertyToken?.toString(),
             }),
           });
 
           if (!dbResponse.ok) {
+            console.error("MongoDB save failed:", await dbResponse.json());
             throw new Error("Failed to save property to database");
           }
 
+          console.log("MongoDB save successful");
           notification.remove(loadingToastId);
           notification.success("Property metadata uploaded successfully!");
         } catch (error) {
+          console.error("Detailed error in property listing process:", error);
           notification.error(
             <>
               <p className="font-bold mt-0 mb-1">Error uploading property metadata</p>
               <p className="m-0">Please try again.</p>
             </>,
           );
-          console.error("Error uploading metadata:", error);
         }
       });
     },
@@ -259,30 +279,6 @@ export default function ListPropertyPage() {
           </div>
         )}
 
-        {/* Listing Type */}
-        {/* <div className="flex gap-4">
-          <label className="flex items-center gap-2">
-            <input
-              type="radio"
-              name="listingType"
-              checked={form.listingType === "sale"}
-              onChange={() => setForm({ ...form, listingType: "sale" })}
-              className="radio radio-primary"
-            />
-            For Sale
-          </label>
-          <label className="flex items-center gap-2">
-            <input
-              type="radio"
-              name="listingType"
-              checked={form.listingType === "rent"}
-              onChange={() => setForm({ ...form, listingType: "rent" })}
-              className="radio radio-primary"
-            />
-            For Rent
-          </label>
-        </div> */}
-
         {/* Title */}
         <div className="form-control">
           <label className="label">
@@ -356,63 +352,6 @@ export default function ListPropertyPage() {
           </div>
         </div>
 
-        {/* Compartmentalization */}
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">Compartmentalization</span>
-          </label>
-          <select
-            value={form.compartmentalization}
-            onChange={e => setForm({ ...form, compartmentalization: e.target.value })}
-            className="select select-bordered w-full"
-          >
-            <option value="">Choose</option>
-            <option value="detached">Detached</option>
-            <option value="semi-detached">Semi-detached</option>
-            <option value="not-detached">Not-detached</option>
-            <option value="circular">Circular</option>
-          </select>
-        </div>
-
-        {/* Comfort */}
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">Comfort</span>
-          </label>
-          <select
-            value={form.comfort}
-            onChange={e => setForm({ ...form, comfort: e.target.value })}
-            className="select select-bordered w-full"
-          >
-            <option value="">Choose</option>
-            <option value="1">Comfort 1</option>
-            <option value="2">Comfort 2</option>
-            <option value="3">Comfort 3</option>
-            <option value="lux">Lux</option>
-          </select>
-        </div>
-
-        {/* Floor */}
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">Floor</span>
-          </label>
-          <select
-            value={form.floor}
-            onChange={e => setForm({ ...form, floor: e.target.value })}
-            className="select select-bordered w-full"
-          >
-            <option value="">Choose</option>
-            <option value="basement">Basement</option>
-            <option value="ground">Ground Floor</option>
-            {[...Array(20)].map((_, i) => (
-              <option key={i + 1} value={`${i + 1}`}>
-                Floor {i + 1}
-              </option>
-            ))}
-          </select>
-        </div>
-
         {/* Usable Surface */}
         <div className="form-control">
           <label className="label">
@@ -459,25 +398,6 @@ export default function ListPropertyPage() {
             className="input input-bordered w-full"
             placeholder="Property location"
           />
-        </div>
-
-        {/* Construction Year */}
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">Construction Year</span>
-          </label>
-          <select
-            value={form.constructionYear}
-            onChange={e => setForm({ ...form, constructionYear: e.target.value })}
-            className="select select-bordered w-full"
-          >
-            <option value="">Choose</option>
-            {[...Array(124)].map((_, i) => (
-              <option key={i} value={`${2024 - i}`}>
-                {2024 - i}
-              </option>
-            ))}
-          </select>
         </div>
 
         {/* Description */}
