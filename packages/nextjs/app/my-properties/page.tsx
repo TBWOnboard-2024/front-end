@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import { NewPropertyCard } from "~~/components/NewPropertyCard";
+import { TBUSDMintButton } from "~~/components/scaffold-eth/TBUSDMintButton";
 
 interface Property {
   id: string;
@@ -68,6 +69,14 @@ export default function MyProperties() {
 
   return (
     <div className="container mx-auto px-6 py-8">
+      {/* TBUSD Section */}
+      <div className="mb-8">
+        <div className="bg-base-200 rounded-lg p-6">
+          <h2 className="text-2xl font-bold mb-4">tBUSD Balance & Minting</h2>
+          <TBUSDMintButton />
+        </div>
+      </div>
+
       {/* Listed Properties Section */}
       <div className="mb-12">
         <h1 className="text-4xl font-bold mb-8">Listed Properties</h1>
