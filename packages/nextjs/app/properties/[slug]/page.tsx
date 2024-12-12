@@ -14,6 +14,11 @@ interface Property {
   name: string;
   description: string;
   image: string;
+  isShared: boolean;
+  canBid: boolean;
+  totalShares: number;
+  pricePerShare: number;
+  propertyToken: string;
   properties: {
     title: string;
     price: number;
@@ -23,7 +28,6 @@ interface Property {
     usableSurface: number;
     seller: string;
     canBid: boolean;
-    listed: boolean;
   };
 }
 
@@ -39,21 +43,21 @@ export default function PropertyDetails({ params }: { params: { slug: string } }
   // Contract writes
   const { writeContractAsync: marketplaceWrite } = useScaffoldWriteContract("Marketplace");
   const { writeContractAsync: fractionalMarketplaceWrite } = useScaffoldWriteContract("Marketplace_Fractional");
+  const { writeContractAsync: tBUSDWrite } = useScaffoldWriteContract("tBUSD");
+
+  const { data: tBUSDRead } = useScaffoldReadContract({
+    contractName: "tBUSD",
+    functionName: "allowance",
+    args: [address as `0x${string}`, "0x501566a4d86F95222989E93210425deB589906A0"],
+  });
 
   // Marketplace Contract writes
-  const listProperty = async () => {
-    await marketplaceWrite({
-      functionName: "listProperty",
-      args: [BigInt(params.slug), BigInt(property?.properties.price || 0), property?.properties.canBid],
-    });
-  };
-
   const buyProperty = async () => {
-    console.log(parseEther(property?.properties.price.toString() || "0"));
+    const price = parseEther(property?.properties.price.toString() || "0");
 
     await marketplaceWrite({
       functionName: "buyProperty",
-      args: [BigInt(params.slug), BigInt(property?.properties.price || 0)],
+      args: [BigInt(params.slug), price],
     });
   };
 
@@ -120,9 +124,6 @@ export default function PropertyDetails({ params }: { params: { slug: string } }
     args: [BigInt(params.slug)],
   });
 
-  console.log("getDownPayment", getDownPayment);
-  console.log("getMonthlyPayment", getMonthlyPayment);
-
   // Fractional Contract writes
   const buyPropertyShare = async () => {
     await fractionalMarketplaceWrite({
@@ -162,9 +163,6 @@ export default function PropertyDetails({ params }: { params: { slug: string } }
   }
 
   const isOwner = address && property?.properties.seller === address;
-  console.log("property.properties.seller", property?.properties.seller);
-  console.log("address", address);
-  console.log("isOwner", isOwner);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -222,63 +220,87 @@ export default function PropertyDetails({ params }: { params: { slug: string } }
             </div>
           )}
 
-          {/* Action Buttons - Reorganized */}
+          {/* Action Buttons */}
           <div className="space-y-4">
-            {!isOwner && property.properties.listed && (
-              <div className="space-y-2">
-                {/* Regular Purchase Options */}
-                <div className="grid grid-cols-2 gap-2">
-                  <button onClick={buyProperty} className="btn btn-primary">
-                    Buy Now
-                  </button>
-                  <button onClick={buyWithInstallment} className="btn btn-secondary">
-                    Buy with Installments
-                  </button>
-                </div>
-
-                {/* Fractional Purchase */}
-                {property.properties.isShared && (
-                  <div className="flex gap-2">
-                    <input
-                      type="number"
-                      value={shareAmount}
-                      onChange={e => setShareAmount(e.target.value)}
-                      className="input input-bordered flex-1"
-                      placeholder="Share amount"
-                    />
-                    <button onClick={buyPropertyShare} className="btn btn-accent">
-                      Buy Shares
-                    </button>
-                  </div>
-                )}
-
-                {/* Bidding Section */}
-                {property.properties.canBid && (
-                  <div className="space-y-2 border-t pt-2">
-                    <div className="flex gap-2">
-                      <input
-                        type="number"
-                        value={bidAmount}
-                        onChange={e => setBidAmount(e.target.value)}
-                        className="input input-bordered flex-1"
-                        placeholder="Bid amount"
-                      />
-                      <button onClick={placeBid} className="btn btn-outline">
-                        Place Bid
-                      </button>
-                    </div>
-                    <button onClick={withdrawBid} className="btn btn-outline btn-warning w-full">
-                      Withdraw Bid
-                    </button>
-                  </div>
-                )}
-
-                {/* Payment Button */}
-                <button onClick={makePayment} className="btn btn-info w-full">
-                  Make Payment
+            {/* Regular Purchase Options */}
+            {!isOwner && (
+              <div className="flex flex-col gap-3">
+                <button onClick={buyProperty} className="btn btn-primary w-full">
+                  Buy Now
+                </button>
+                <button onClick={buyWithInstallment} className="btn btn-secondary w-full">
+                  Buy with Installments
                 </button>
               </div>
             )}
+
+            {/* Owner Actions */}
+            {isOwner && (
+              <div className="space-y-3">
+                <div className="flex gap-3">
+                  <input
+                    type="number"
+                    placeholder="New Price (tBUSD)"
+                    value={newPrice}
+                    onChange={e => setNewPrice(e.target.value)}
+                    className="input input-bordered flex-1"
+                  />
+                  <button onClick={updatePrice} className="btn btn-primary">
+                    Update Price
+                  </button>
+                </div>
+                <button onClick={cancelSelling} className="btn btn-error w-full">
+                  Cancel Selling
+                </button>
+                <button onClick={acceptBid} className="btn btn-success w-full">
+                  Accept Current Bid
+                </button>
+              </div>
+            )}
+
+            {/* Bidding Section */}
+            {property.canBid && !isOwner && (
+              <div className="space-y-3">
+                <div className="flex gap-3">
+                  <input
+                    type="number"
+                    placeholder="Bid Amount (tBUSD)"
+                    value={bidAmount}
+                    onChange={e => setBidAmount(e.target.value)}
+                    className="input input-bordered flex-1"
+                  />
+                  <button onClick={placeBid} className="btn btn-primary">
+                    Place Bid
+                  </button>
+                </div>
+                <button onClick={withdrawBid} className="btn btn-warning w-full">
+                  Withdraw Bid
+                </button>
+              </div>
+            )}
+
+            {/* Fractional Purchase Section */}
+            {!isOwner && property.isShared && (
+              <div className="space-y-3">
+                <div className="flex gap-3">
+                  <input
+                    type="number"
+                    placeholder="Share Amount"
+                    value={shareAmount}
+                    onChange={e => setShareAmount(e.target.value)}
+                    className="input input-bordered flex-1"
+                  />
+                  <button onClick={buyPropertyShare} className="btn btn-accent">
+                    Buy Shares
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Payment Button */}
+            <button onClick={makePayment} className="btn btn-info w-full">
+              Make Monthly Payment
+            </button>
           </div>
         </div>
       </div>
