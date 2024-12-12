@@ -1,6 +1,15 @@
 import { useState } from "react";
 import { AdvancedMarker, InfoWindow, Pin } from "@vis.gl/react-google-maps";
-import { Property } from "~~/app/properties/propertyData";
+
+interface Property {
+  id: string;
+  title: string;
+  price: number;
+  coordinates: {
+    lat: number;
+    lng: number;
+  };
+}
 
 interface PropertyMarkersProps {
   properties: Property[];
@@ -31,7 +40,7 @@ export function PropertyMarkers({ properties, selectedPropertyId, onMarkerClick 
             <InfoWindow>
               <div className="p-2">
                 <h3 className="font-bold">{property.title}</h3>
-                <p className="text-sm">${property.price.toLocaleString()}</p>
+                <p className="text-sm">${property.price.toLocaleString()} tBUSD</p>
               </div>
             </InfoWindow>
           )}

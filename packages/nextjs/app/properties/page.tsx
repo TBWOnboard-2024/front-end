@@ -1,15 +1,67 @@
 "use client";
 
-import { useState } from "react";
-import { properties } from "./propertyData";
+import { useEffect, useState } from "react";
 import { APIProvider, Map } from "@vis.gl/react-google-maps";
 import { PropertyCard } from "~~/components/PropertyCard";
 import { PropertyMarkers } from "~~/components/PropertyMarkers";
 
 const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string;
 
+interface Property {
+  id: string;
+  tokenId: string;
+  name: string;
+  image: string;
+  properties: {
+    title: string;
+    price: number;
+    rooms: number;
+    bathrooms: number;
+    location: string;
+    usableSurface: number;
+    coordinates?: {
+      lat: number;
+      lng: number;
+    };
+  };
+}
+
 export default function PropertiesPage() {
   const [selectedProperty, setSelectedProperty] = useState<string | null>(null);
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        const response = await fetch("/api/properties");
+        if (!response.ok) throw new Error("Failed to fetch properties");
+        const data = await response.json();
+        setProperties(data);
+      } catch (error) {
+        console.error("Error fetching properties:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProperties();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    );
+  }
+
+  // Calculate map center based on property coordinates
+  const defaultCenter = { lat: 25.033, lng: 121.565 }; // Default to Taipei
+  const mapCenter =
+    properties.length > 0 && properties[0].properties.coordinates
+      ? properties[0].properties.coordinates
+      : defaultCenter;
 
   return (
     <div className="flex h-[calc(100vh-4rem)]">
@@ -19,10 +71,20 @@ export default function PropertiesPage() {
         <div className="space-y-6">
           {properties.map(property => (
             <PropertyCard
-              key={property.id}
-              property={property}
-              onClick={() => setSelectedProperty(property.id)}
-              isSelected={selectedProperty === property.id}
+              key={property.tokenId}
+              property={{
+                id: property.tokenId,
+                title: property.properties.title || property.name,
+                price: property.properties.price,
+                size: property.properties.usableSurface,
+                bedrooms: property.properties.rooms,
+                bathrooms: property.properties.bathrooms,
+                address: property.properties.location,
+                coordinates: property.properties.coordinates || defaultCenter,
+                imageUrl: property.image,
+              }}
+              onClick={() => setSelectedProperty(property.tokenId)}
+              isSelected={selectedProperty === property.tokenId}
             />
           ))}
         </div>
@@ -34,12 +96,17 @@ export default function PropertiesPage() {
           <Map
             mapId={"bf51a910020fa25a"}
             defaultZoom={12}
-            defaultCenter={{ lat: 25.033, lng: 121.565 }}
+            defaultCenter={mapCenter}
             gestureHandling={"greedy"}
             disableDefaultUI
           >
             <PropertyMarkers
-              properties={properties}
+              properties={properties.map(p => ({
+                id: p.tokenId,
+                title: p.properties.title || p.name,
+                price: p.properties.price,
+                coordinates: p.properties.coordinates || defaultCenter,
+              }))}
               selectedPropertyId={selectedProperty}
               onMarkerClick={id => setSelectedProperty(id)}
             />
