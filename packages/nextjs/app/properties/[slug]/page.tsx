@@ -63,16 +63,33 @@ export default function PropertyDetails({ params }: { params: { slug: string } }
   const buyWithInstallment = async () => {
     await marketplaceWrite({
       functionName: "buyWithInstallment",
-      args: [BigInt(params.slug), BigInt(property?.properties.price || 0)],
+      args: [BigInt(params.slug), getDownPayment],
     });
   };
 
   const updatePrice = async () => {
     if (!newPrice) return;
-    await marketplaceWrite({
-      functionName: "updatePrice",
-      args: [BigInt(params.slug), parseEther(newPrice)],
-    });
+    try {
+      await marketplaceWrite({
+        functionName: "updatePrice",
+        args: [BigInt(params.slug), parseEther(newPrice)],
+      });
+      await fetch(`/api/properties/${params.slug}`, {
+        method: "PUT",
+        body: JSON.stringify({ price: newPrice }),
+      });
+
+      // Refetch property data
+      const response = await fetch(`/api/properties/${params.slug}`);
+      if (!response.ok) throw new Error("Failed to fetch updated property");
+      const updatedProperty = await response.json();
+      setProperty(updatedProperty);
+      setNewPrice(""); // Clear the input field
+      notification.success("Price updated successfully!");
+    } catch (error) {
+      console.error("Error updating price:", error);
+      notification.error("Failed to update price");
+    }
   };
 
   const cancelSelling = async () => {
@@ -209,7 +226,7 @@ export default function PropertyDetails({ params }: { params: { slug: string } }
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm">Down Payment</p>
-                  <p className="font-bold">{Number(getDownPayment) / 10 ** 18} tBUSD</p>
+                  <p className="font-bold">{(Number(getDownPayment) / 10 ** 18).toFixed(2)} tBUSD</p>
                 </div>
                 <div>
                   <p className="text-sm">Monthly Payment</p>
@@ -251,9 +268,11 @@ export default function PropertyDetails({ params }: { params: { slug: string } }
                 <button onClick={cancelSelling} className="btn btn-error w-full">
                   Cancel Selling
                 </button>
-                <button onClick={acceptBid} className="btn btn-success w-full">
-                  Accept Current Bid
-                </button>
+                {property.canBid && (
+                  <button onClick={acceptBid} className="btn btn-success w-full">
+                    Accept Current Bid
+                  </button>
+                )}
               </div>
             )}
 

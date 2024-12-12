@@ -52,7 +52,7 @@ export default function Properties() {
         {properties.map((property, index) => (
           <NewPropertyCard
             key={property.tokenId || index}
-            id={property.id}
+            id={property.tokenId}
             title={property.properties.title || property.name}
             price={property.properties.price}
             location={property.properties.location}
