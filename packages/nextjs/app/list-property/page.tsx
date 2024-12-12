@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useScaffoldWatchContractEvent, useScaffoldWriteContract } from "../../hooks/scaffold-eth";
+import { adminWalletClient } from "../../services/adminWallet";
 import { pinataService } from "../../services/pinata";
 import { ListingForm, PropertyType } from "../../types/all-types";
 import { notification } from "../../utils/scaffold-eth";
@@ -72,10 +73,11 @@ export default function ListPropertyPage() {
           const tokenUri = await pinataService.uploadMetadata(tokenId?.toString() || "", metadata);
           console.log("Token URI received:", tokenUri);
 
-          // await writeContractAsync({
-          //   functionName: "setTokenURI",
-          //   args: [tokenId, tokenUri],
-          // });
+          await writeContractAsync({
+            functionName: "setTokenURI",
+            args: [tokenId, tokenUri],
+            account: adminWalletClient.account,
+          });
 
           // Save to MongoDB
           console.log("Saving to MongoDB...");
@@ -159,10 +161,11 @@ export default function ListPropertyPage() {
           const tokenUri = await pinataService.uploadMetadata(tokenId?.toString() || "", metadata);
           console.log("Token URI received:", tokenUri);
 
-          // await writeContractAsync({
-          //   functionName: "setTokenURI",
-          //   args: [tokenId, tokenUri],
-          // });
+          await writeContractAsync({
+            functionName: "setTokenURI",
+            args: [tokenId, tokenUri],
+            account: adminWalletClient.account,
+          });
 
           // Save to MongoDB
           console.log("Saving to MongoDB...");

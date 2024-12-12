@@ -24,7 +24,6 @@ interface Property {
 export default function MyProperties() {
   const { address } = useAccount();
   const [listedProperties, setListedProperties] = useState<Property[]>([]);
-  const [mintedProperties, setMintedProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -40,8 +39,7 @@ export default function MyProperties() {
           (property: Property) => property.properties.seller?.toLowerCase() === address.toLowerCase(),
         );
 
-        setListedProperties(userProperties.filter((property: Property) => property.properties.listed));
-        setMintedProperties(userProperties.filter((property: Property) => !property.properties.listed));
+        setListedProperties(userProperties.filter((property: Property) => property.properties));
       } catch (error) {
         console.error("Error fetching properties:", error);
       } finally {
@@ -80,32 +78,6 @@ export default function MyProperties() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {listedProperties.map(property => (
-              <NewPropertyCard
-                key={property.tokenId}
-                id={property.tokenId}
-                title={property.properties.title || property.name}
-                price={property.properties.price}
-                location={property.properties.location}
-                bedrooms={property.properties.rooms}
-                bathrooms={property.properties.bathrooms}
-                size={property.properties.usableSurface}
-                imageUrl={property.image}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Minted Properties Section */}
-      <div>
-        <h1 className="text-4xl font-bold mb-8">Minted Properties</h1>
-        {mintedProperties.length === 0 ? (
-          <div className="text-center py-8 bg-base-200 rounded-lg">
-            <p className="text-lg text-gray-600">No minted properties found</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {mintedProperties.map(property => (
               <NewPropertyCard
                 key={property.tokenId}
                 id={property.tokenId}

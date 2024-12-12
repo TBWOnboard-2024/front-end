@@ -34,7 +34,7 @@ export const NewPropertyCard = ({
         {/* Property Details */}
         <div className="p-6 space-y-4">
           {/* Price */}
-          <div className="text-4xl font-light text-blue-400">${price.toLocaleString()}</div>
+          <div className="text-4xl font-bold text-blue-400">{price.toLocaleString()} tBUSD</div>
 
           {/* Property Name */}
           <h2 className="text-3xl font-bold text-navy-900">{title}</h2>

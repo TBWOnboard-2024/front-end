@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { Bath, BedSingle, Ruler } from "lucide-react";
 import { parseEther } from "viem";
 import { useAccount } from "wagmi";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
@@ -182,17 +183,23 @@ export default function PropertyDetails({ params }: { params: { slug: string } }
         {/* Property Details */}
         <div className="space-y-6">
           <h1 className="text-4xl font-bold">{property.properties.title}</h1>
-          <p className="text-2xl text-primary">${property.properties.price.toLocaleString()}</p>
+          <p className="text-2xl text-primary">{property.properties.price.toLocaleString()} tBUSD</p>
 
           <div className="grid grid-cols-3 gap-4">
             <div className="stat-box">
-              <span className="text-lg">{property.properties.rooms} Rooms</span>
+              <span className="text-lg flex items-center gap-2">
+                {property.properties.rooms} <BedSingle />
+              </span>
             </div>
             <div className="stat-box">
-              <span className="text-lg">{property.properties.bathrooms} Baths</span>
+              <span className="text-lg flex items-center gap-2">
+                {property.properties.bathrooms} <Bath />
+              </span>
             </div>
             <div className="stat-box">
-              <span className="text-lg">{property.properties.usableSurface} m²</span>
+              <span className="text-lg flex items-center gap-2">
+                {property.properties.usableSurface} <Ruler />
+              </span>
             </div>
           </div>
 
@@ -270,38 +277,6 @@ export default function PropertyDetails({ params }: { params: { slug: string } }
                 <button onClick={makePayment} className="btn btn-info w-full">
                   Make Payment
                 </button>
-              </div>
-            )}
-
-            {/* Owner Controls */}
-            {isOwner && (
-              <div className="space-y-2 border-t pt-2">
-                {property.properties.listed ? (
-                  <>
-                    <div className="flex gap-2">
-                      <input
-                        type="number"
-                        value={newPrice}
-                        onChange={e => setNewPrice(e.target.value)}
-                        className="input input-bordered flex-1"
-                        placeholder="New price"
-                      />
-                      <button onClick={updatePrice} className="btn btn-secondary">
-                        Update Price
-                      </button>
-                    </div>
-                    <button onClick={cancelSelling} className="btn btn-error w-full">
-                      Unlist Property
-                    </button>
-                    <button onClick={acceptBid} className="btn btn-success w-full">
-                      Accept Current Bid
-                    </button>
-                  </>
-                ) : (
-                  <button onClick={listProperty} className="btn btn-primary w-full">
-                    List Property
-                  </button>
-                )}
               </div>
             )}
           </div>

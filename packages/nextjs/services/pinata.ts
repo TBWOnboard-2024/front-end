@@ -51,7 +51,7 @@ export class PinataService {
         return this.pinataFiles.upload.file(newFile);
       });
       const uploads = await Promise.all(uploadPromises);
-      return uploads.map(upload => `https://${PINATA_GATEWAY}/ipfs/${upload.cid}`);
+      return uploads.map(upload => `https://${PINATA_GATEWAY}/files/${upload.cid}`);
     } catch (error) {
       console.error("Error uploading images to Pinata:", error);
       throw error;
