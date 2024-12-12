@@ -14,6 +14,5 @@ export interface ListingForm {
   usableSurface: number;
   price: number;
   location: string;
-  description: string;
   images: File[];
 }

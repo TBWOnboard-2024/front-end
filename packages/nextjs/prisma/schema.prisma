@@ -15,7 +15,6 @@ model Properties {
   image           String
   attributes      Json
   properties      Json
-  listed          Boolean  @default(false)
   isShared        Boolean  @default(false)
   canBid          Boolean  @default(false)  
   totalShares     Int?     // Only for fractional properties

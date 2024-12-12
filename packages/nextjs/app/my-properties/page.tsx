@@ -1,32 +1,56 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { PropertyCard } from "../../components/PropertyCard";
-import { useScaffoldReadContract } from "../../hooks/scaffold-eth";
 import { useAccount } from "wagmi";
+import { NewPropertyCard } from "~~/components/NewPropertyCard";
 
 interface Property {
   id: string;
   tokenId: string;
   name: string;
-  description: string;
   image: string;
-  attributes: {
-    trait_type: string;
-    value: string | number;
-  }[];
   properties: {
-    images: string[];
     title: string;
     price: number;
     rooms: number;
     bathrooms: number;
     location: string;
+    usableSurface: number;
+    seller: string;
+    listed: boolean;
   };
 }
 
 export default function MyProperties() {
   const { address } = useAccount();
+  const [listedProperties, setListedProperties] = useState<Property[]>([]);
+  const [mintedProperties, setMintedProperties] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProperties = async () => {
+      if (!address) return;
+
+      try {
+        const response = await fetch("/api/properties");
+        const allProperties = await response.json();
+
+        // Filter properties based on seller address and listing status
+        const userProperties = allProperties.filter(
+          (property: Property) => property.properties.seller?.toLowerCase() === address.toLowerCase(),
+        );
+
+        setListedProperties(userProperties.filter((property: Property) => property.properties.listed));
+        setMintedProperties(userProperties.filter((property: Property) => !property.properties.listed));
+      } catch (error) {
+        console.error("Error fetching properties:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProperties();
+  }, [address]);
 
   if (!address) {
     return (
@@ -36,16 +60,66 @@ export default function MyProperties() {
     );
   }
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-[60vh]">
+        <div className="loading loading-spinner loading-lg"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-6 py-8">
-      <div className="">
+      {/* Listed Properties Section */}
+      <div className="mb-12">
         <h1 className="text-4xl font-bold mb-8">Listed Properties</h1>
+        {listedProperties.length === 0 ? (
+          <div className="text-center py-8 bg-base-200 rounded-lg">
+            <p className="text-lg text-gray-600">No listed properties found</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {listedProperties.map(property => (
+              <NewPropertyCard
+                key={property.tokenId}
+                id={property.tokenId}
+                title={property.properties.title || property.name}
+                price={property.properties.price}
+                location={property.properties.location}
+                bedrooms={property.properties.rooms}
+                bathrooms={property.properties.bathrooms}
+                size={property.properties.usableSurface}
+                imageUrl={property.image}
+              />
+            ))}
+          </div>
+        )}
       </div>
-      <div className="">
-        <h1 className="text-4xl font-bold mb-8">Owned Properties</h1>
-      </div>
-      <div className="">
+
+      {/* Minted Properties Section */}
+      <div>
         <h1 className="text-4xl font-bold mb-8">Minted Properties</h1>
+        {mintedProperties.length === 0 ? (
+          <div className="text-center py-8 bg-base-200 rounded-lg">
+            <p className="text-lg text-gray-600">No minted properties found</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {mintedProperties.map(property => (
+              <NewPropertyCard
+                key={property.tokenId}
+                id={property.tokenId}
+                title={property.properties.title || property.name}
+                price={property.properties.price}
+                location={property.properties.location}
+                bedrooms={property.properties.rooms}
+                bathrooms={property.properties.bathrooms}
+                size={property.properties.usableSurface}
+                imageUrl={property.image}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

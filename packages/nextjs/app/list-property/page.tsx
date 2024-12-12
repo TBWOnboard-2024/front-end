@@ -20,7 +20,6 @@ export default function ListPropertyPage() {
     usableSurface: 0,
     price: 0,
     location: "",
-    description: "",
     images: [],
   });
 
@@ -64,7 +63,6 @@ export default function ListPropertyPage() {
             form,
             imageUrls,
             lister,
-            true,
             propertyToken?.toString(),
           );
           console.log("Generated metadata:", metadata);
@@ -90,7 +88,6 @@ export default function ListPropertyPage() {
               tokenId: tokenId?.toString(),
               ...metadata,
               isShared: true,
-              listed: true,
               seller: lister,
               canBid: form.canBid,
               totalShares: 1000,
@@ -118,7 +115,6 @@ export default function ListPropertyPage() {
             usableSurface: 0,
             price: 0,
             location: "",
-            description: "",
             images: [],
           });
         } catch (error) {
@@ -155,7 +151,7 @@ export default function ListPropertyPage() {
 
           // Generate metadata
           console.log("Generating metadata with:", { tokenId: tokenId?.toString(), form, imageUrls });
-          const metadata = pinataService.generateMetadata(tokenId?.toString() || "", form, imageUrls, seller, false);
+          const metadata = pinataService.generateMetadata(tokenId?.toString() || "", form, imageUrls, seller);
           console.log("Generated metadata:", metadata);
 
           // Upload metadata to Pinata
@@ -179,7 +175,6 @@ export default function ListPropertyPage() {
               tokenId: tokenId?.toString(),
               ...metadata,
               canBid: form.canBid,
-              listed: false,
               seller: seller,
             }),
           });
@@ -203,7 +198,6 @@ export default function ListPropertyPage() {
             usableSurface: 0,
             price: 0,
             location: "",
-            description: "",
             images: [],
           });
 
@@ -493,19 +487,6 @@ export default function ListPropertyPage() {
             onChange={e => setForm({ ...form, location: e.target.value })}
             className="input input-bordered w-full"
             placeholder="Property location"
-          />
-        </div>
-
-        {/* Description */}
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">Description</span>
-          </label>
-          <textarea
-            value={form.description}
-            onChange={e => setForm({ ...form, description: e.target.value })}
-            className="textarea textarea-bordered h-32"
-            placeholder="Property description"
           />
         </div>
 

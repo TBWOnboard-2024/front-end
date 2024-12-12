@@ -58,21 +58,13 @@ export class PinataService {
     }
   }
 
-  generateMetadata(
-    tokenId: string,
-    propertyData: any,
-    imageUrls: string[],
-    seller?: string,
-    listed?: boolean,
-    propertyToken?: string,
-  ) {
+  generateMetadata(tokenId: string, propertyData: any, imageUrls: string[], seller?: string, propertyToken?: string) {
     console.log("Starting metadata generation with:", {
       tokenId,
       propertyData,
       imageUrls,
       propertyToken,
       seller,
-      listed,
     });
 
     try {
@@ -89,7 +81,6 @@ export class PinataService {
           { trait_type: "Ownership Type", value: propertyData.isShared ? "Fractional" : "Whole" },
           { trait_type: "Can Bid", value: propertyData.canBid },
           { trait_type: "Seller", value: seller },
-          { trait_type: "Listed", value: listed },
         ],
         properties: {
           images: imageUrls,
@@ -102,7 +93,6 @@ export class PinataService {
           isShared: propertyData.isShared,
           canBid: propertyData.canBid,
           seller: seller,
-          listed: listed,
         },
       };
 

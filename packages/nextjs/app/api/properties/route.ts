@@ -17,7 +17,6 @@ export async function POST(request: Request) {
         totalShares: body.isShared ? body.totalShares : null,
         pricePerShare: body.isShared ? body.pricePerShare : null,
         propertyToken: body.isShared ? body.propertyToken : null,
-        listed: body.listed,
       },
     });
 
