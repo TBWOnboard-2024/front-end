@@ -32,24 +32,30 @@ A decentralized real estate platform built on BNB Chain that enables property li
 ### Installation
 
 1. Clone the repository
-`bash
+```bash
 git clone https://github.com/yourusername/realtyhub.git
-cd realtyhub`
+cd realtyhub
+```
 
 
 2. Install dependencies
-`bash
-yarn install`
+```bash
+yarn install
+```
 
 3. Start the development server
-`bash
-yarn start`
+```bash
+yarn start
+```
 
-The app will be available at `http://localhost:3000`
+The app will be available at
+```bash
+http://localhost:3000
+```
 
 ## Project Structure 📁
 
-`
+```
 packages/
 ├── nextjs/ # Next.js frontend application
 │ ├── app/ # App router pages
@@ -58,7 +64,7 @@ packages/
 │ ├── public/ # Static assets
 │ ├── styles/ # Global styles
 │ └── utils/ # Utility functions
-`
+```
 
 ## Roadmap 🗺️
 
