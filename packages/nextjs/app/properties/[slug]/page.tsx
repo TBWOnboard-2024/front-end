@@ -45,15 +45,14 @@ export default function PropertyDetails({ params }: { params: { slug: string } }
   const { writeContractAsync: fractionalMarketplaceWrite } = useScaffoldWriteContract("Marketplace_Fractional");
   const { writeContractAsync: tBUSDWrite } = useScaffoldWriteContract("tBUSD");
 
-  const { data: tBUSDRead } = useScaffoldReadContract({
-    contractName: "tBUSD",
-    functionName: "allowance",
-    args: [address as `0x${string}`, "0x501566a4d86F95222989E93210425deB589906A0"],
-  });
-
   // Marketplace Contract writes
   const buyProperty = async () => {
     const price = parseEther(property?.properties.price.toString() || "0");
+
+    await tBUSDWrite({
+      functionName: "approve",
+      args: [address, price],
+    });
 
     await marketplaceWrite({
       functionName: "buyProperty",
