@@ -69,22 +69,22 @@ packages/
 ## Roadmap 🗺️
 
 ### Phase 1: Ideation and Concept Development
-- [ ] Define the project's scope, vision, and objectives.
-- [ ] Research legal and regulatory requirements for tokenized real estate transactions.
-- [ ] Design the dual marketplace architecture (Full Ownership & Fractional Ownership).
-- [ ] Draft smart contract specifications.
+- [x] Define the project's scope, vision, and objectives.
+- [x] Research legal and regulatory requirements for tokenized real estate transactions.
+- [x] Design the dual marketplace architecture (Full Ownership & Fractional Ownership).
+- [x] Draft smart contract specifications.
 
 ---
 
 ### Phase 2: Development and Testing
-- [ ] **Smart Contract Development:**
-  - [ ] Develop and test the Property NFT contract to tokenize real-world assets.
-  - [ ] Implement the Full Ownership Marketplace with features like buy, bid, and installment plans.
-  - [ ] Build the Fractional Ownership Marketplace to facilitate share-based investments using ERC-20 tokens.
-- [ ] **Frontend and Backend Development:**
-  - [ ] Create a user-friendly frontend for property listing, purchasing, and investment management.
-  - [ ] Build a scalable backend to process transactions and manage property metadata using IPFS.
-  - [ ] Integrate blockchain APIs for seamless on-chain interactions and real-time updates.
+- [x] **Smart Contract Development:**
+  - [x] Develop and test the Property NFT contract to tokenize real-world assets.
+  - [x] Implement the Full Ownership Marketplace with features like buy, bid, and installment plans.
+  - [x] Build the Fractional Ownership Marketplace to facilitate share-based investments using ERC-20 tokens.
+- [x] **Frontend and Backend Development:**
+  - [x] Create a user-friendly frontend for property listing, purchasing, and investment management.
+  - [x] Build a scalable backend to process transactions and manage property metadata using IPFS.
+  - [x] Integrate blockchain APIs for seamless on-chain interactions and real-time updates.
   - [ ] Conduct end-to-end testing for security, usability, and compliance with blockchain best practices.
 
 ---

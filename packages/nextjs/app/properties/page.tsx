@@ -63,8 +63,6 @@ export default function PropertiesPage() {
       ? properties[0].properties.coordinates
       : defaultCenter;
 
-  console.log(properties);
-
   return (
     <div className="flex h-[calc(100vh-4rem)]">
       {/* Property List */}

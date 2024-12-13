@@ -82,6 +82,7 @@ export class PinataService {
           location: propertyData.location,
           propertyType: propertyData.propertyType,
           ownershipType: propertyData.isShared ? "Fractional" : "Whole",
+          coordinates: propertyData.coordinates || null,
         },
       };
 

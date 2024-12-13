@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { useScaffoldWatchContractEvent, useScaffoldWriteContract } from "../../hooks/scaffold-eth";
 import { adminWalletClient } from "../../services/adminWallet";
+import { geocodingService } from "../../services/geocoding";
 import { pinataService } from "../../services/pinata";
 import { ListingForm, PropertyType } from "../../types/all-types";
 import { notification } from "../../utils/scaffold-eth";
@@ -45,6 +46,13 @@ export default function ListPropertyPage() {
         try {
           const loadingToastId = notification.loading("Uploading property metadata to IPFS...");
           console.log("Current form state:", form);
+
+          // Get coordinates from address
+          const coordinates = await geocodingService.getCoordinates(form.location);
+          if (!coordinates) {
+            notification.error("Failed to get coordinates for the provided address");
+            return;
+          }
 
           // Upload images to Pinata
           console.log("Uploading images:", form.images);
