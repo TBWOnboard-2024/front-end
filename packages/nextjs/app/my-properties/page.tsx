@@ -11,7 +11,8 @@ interface Property {
   tokenId: string;
   name: string;
   image: string;
-  attributes: {
+  properties: {
+    title: string;
     rooms: number;
     bathrooms: number;
     location: string;
@@ -21,17 +22,28 @@ interface Property {
 
 export default function MyProperties() {
   const { address } = useAccount();
-  const [listedProperties, setListedProperties] = useState<Property[]>([]);
-  const [ownedProperties, setOwnedProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
+  const [properties, setProperties] = useState<Property[]>([]);
+
+  const { data: tokenIds } = useScaffoldReadContract({
+    contractName: "PropertyNFT",
+    functionName: "tokensByAddress",
+    args: [address],
+  });
 
   useEffect(() => {
     const fetchProperties = async () => {
-      if (!address) return;
+      if (!tokenIds) return;
 
       try {
-        const response = await fetch("/api/properties");
-        const allProperties = await response.json();
+        const propertyPromises = tokenIds.map(async tokenId => {
+          const response = await fetch(`/api/properties/${tokenId}`);
+          if (!response.ok) throw new Error(`Failed to fetch property ${tokenId}`);
+          return response.json();
+        });
+
+        const fetchedProperties = await Promise.all(propertyPromises);
+        setProperties(fetchedProperties);
       } catch (error) {
         console.error("Error fetching properties:", error);
       } finally {
@@ -40,7 +52,7 @@ export default function MyProperties() {
     };
 
     fetchProperties();
-  }, [address]);
+  }, [tokenIds]);
 
   if (!address) {
     return (
@@ -66,48 +78,20 @@ export default function MyProperties() {
         </div>
       </div>
 
-      {/* Listed Properties Section */}
-      {/* <div className="mb-12">
-        <h1 className="text-4xl font-bold mb-8">Listed Properties</h1>
-        {listedProperties.length === 0 ? (
-          <div className="text-center py-8 bg-base-200 rounded-lg">
-            <p className="text-lg text-gray-600">No listed properties found</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {listedProperties.map(property => (
-              <NewPropertyCard
-                key={property.tokenId}
-                id={property.tokenId}
-                title={property.properties.title || property.name}
-                price={property.properties.price}
-                location={property.properties.location}
-                bedrooms={property.properties.rooms}
-                bathrooms={property.properties.bathrooms}
-                size={property.properties.usableSurface}
-                imageUrl={property.image}
-              />
-            ))}
-          </div>
-        )}
-      </div> */}
-
       {/* Owned Properties Section */}
-
-      {/* <div className="mb-12">
+      <div className="mb-12">
         <h1 className="text-4xl font-bold mb-8">Owned Properties</h1>
-        {listedProperties.length === 0 ? (
-          <div className="text-center py-8 bg-base-200 rounded-lg">
-            <p className="text-lg text-gray-600">No owned properties found</p>
+        {properties.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-xl text-gray-600">You don&apos;t own any properties yet.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {listedProperties.map(property => (
+            {properties.map(property => (
               <NewPropertyCard
                 key={property.tokenId}
                 id={property.tokenId}
                 title={property.properties.title || property.name}
-                price={property.properties.price}
                 location={property.properties.location}
                 bedrooms={property.properties.rooms}
                 bathrooms={property.properties.bathrooms}
@@ -117,7 +101,7 @@ export default function MyProperties() {
             ))}
           </div>
         )}
-      </div> */}
+      </div>
     </div>
   );
 }
