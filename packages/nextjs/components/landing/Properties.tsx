@@ -29,7 +29,7 @@ export default function Properties() {
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        const response = await fetch("/api/properties?limit=4");
+        const response = await fetch("/api/properties?limit=3");
         const data = await response.json();
         setProperties(data);
       } catch (error) {
@@ -54,7 +54,6 @@ export default function Properties() {
             key={property.tokenId || index}
             id={property.tokenId}
             title={property.properties.title || property.name}
-            price={property.properties.price}
             location={property.properties.location}
             bedrooms={property.properties.rooms}
             bathrooms={property.properties.bathrooms}

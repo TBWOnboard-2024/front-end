@@ -1,11 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
+import { useScaffoldReadContract } from "../hooks/scaffold-eth";
 import { Bath, BedSingle, Ruler } from "lucide-react";
 
 interface NewPropertyCardProps {
   id: string;
   title: string;
-  price: number;
   location: string;
   bedrooms: number;
   bathrooms: number;
@@ -13,16 +13,23 @@ interface NewPropertyCardProps {
   imageUrl: string;
 }
 
-export const NewPropertyCard = ({
-  id,
-  title,
-  price,
-  location,
-  bedrooms,
-  bathrooms,
-  size,
-  imageUrl,
-}: NewPropertyCardProps) => {
+export const NewPropertyCard = ({ id, title, location, bedrooms, bathrooms, size, imageUrl }: NewPropertyCardProps) => {
+  const { data: getProperty } = useScaffoldReadContract({
+    contractName: "Marketplace",
+    functionName: "getMarketItem",
+    args: [BigInt(id)],
+  });
+  const { data: getPropertyShared } = useScaffoldReadContract({
+    contractName: "Marketplace_Fractional",
+    functionName: "getMarketItem",
+    args: [BigInt(id)],
+  });
+
+  let price = (BigInt(getProperty?.price || 0) / BigInt(10 ** 18)).toLocaleString();
+
+  if (price === "0") {
+    price = (BigInt(getPropertyShared?.price || 0) / BigInt(10 ** 18)).toLocaleString();
+  }
   return (
     <Link href={`/properties/${id}`}>
       <div className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
@@ -34,13 +41,13 @@ export const NewPropertyCard = ({
         {/* Property Details */}
         <div className="p-6 space-y-4">
           {/* Price */}
-          <div className="text-4xl font-bold text-blue-400">{price.toLocaleString()} tBUSD</div>
+          <div className="text-4xl font-bold text-blue-400">{price} tBUSD</div>
 
           {/* Property Name */}
-          <h2 className="text-3xl font-bold text-navy-900">{title}</h2>
+          <h2 className="text-xl font-bold text-navy-900">{title}</h2>
 
           {/* Address */}
-          <p className="text-xl text-gray-500">{location}</p>
+          <p className="text-sm text-gray-500">{location}</p>
 
           {/* Property Features */}
           <div className="flex items-center gap-8 pt-4">
