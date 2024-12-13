@@ -177,8 +177,6 @@ export default function ListPropertyPage() {
             body: JSON.stringify({
               tokenId: tokenId?.toString(),
               ...metadata,
-              canBid: form.canBid,
-              seller: seller,
             }),
           });
 

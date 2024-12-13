@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Bath, BedSingle, Ruler } from "lucide-react";
 import { parseEther } from "viem";
 import { useAccount } from "wagmi";
+import { MARKETPLACE_CONTRACT } from "~~/contracts/const";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
 
@@ -46,24 +47,48 @@ export default function PropertyDetails({ params }: { params: { slug: string } }
   const { writeContractAsync: tBUSDWrite } = useScaffoldWriteContract("tBUSD");
 
   // Marketplace Contract writes
+  const { data: allowance } = useScaffoldReadContract({
+    contractName: "tBUSD",
+    functionName: "allowance",
+    args: [address, MARKETPLACE_CONTRACT],
+  });
+
   const buyProperty = async () => {
     const price = parseEther(property?.properties.price.toString() || "0");
+    console.log("Allowance:", allowance?.toString());
+    console.log("Price:", price.toString());
 
-    await tBUSDWrite({
-      functionName: "approve",
-      args: [address, price],
-    });
+    if (!allowance || allowance < price) {
+      console.log("Approving transaction...");
+      try {
+        await tBUSDWrite({
+          functionName: "approve",
+          args: [MARKETPLACE_CONTRACT, price],
+        });
+        notification.success("Approval successful!");
+      } catch (error) {
+        console.error("Approval error:", error);
+        notification.error("Failed to approve transaction");
+        return;
+      }
+    }
 
-    await marketplaceWrite({
-      functionName: "buyProperty",
-      args: [BigInt(params.slug), price],
-    });
+    try {
+      await marketplaceWrite({
+        functionName: "buyProperty",
+        args: [BigInt(params.slug), price],
+      });
+      notification.success("Property purchased successfully!");
+    } catch (error) {
+      console.error("Purchase error:", error);
+      notification.error("Failed to purchase property");
+    }
   };
 
   const buyWithInstallment = async () => {
     await marketplaceWrite({
       functionName: "buyWithInstallment",
-      args: [BigInt(params.slug), getDownPayment],
+      args: [BigInt(params.slug), parseEther(property?.properties.price.toString() || "0")],
     });
   };
 

@@ -72,41 +72,14 @@ export class PinataService {
           { trait_type: "Address of Property", value: propertyData.location },
           { trait_type: "Property Type", value: propertyData.propertyType === 0 ? "Apartment" : "House" },
           { trait_type: "Ownership Type", value: propertyData.isShared ? "Fractional" : "Whole" },
-          { trait_type: "Can Bid", value: propertyData.canBid },
-          { trait_type: "Seller", value: seller },
         ],
         properties: {
           images: imageUrls,
           title: propertyData.title,
-          price: propertyData.price,
-          rooms: propertyData.rooms,
-          bathrooms: propertyData.bathrooms,
-          location: propertyData.location,
-          usableSurface: propertyData.usableSurface,
-          isShared: propertyData.isShared,
-          canBid: propertyData.canBid,
-          seller: seller,
         },
       };
 
       console.log("Base metadata created:", baseMetadata);
-
-      // Add fractional-specific metadata if it's a shared property
-      if (propertyData.isShared) {
-        console.log("Adding fractional ownership details. PropertyToken:", propertyToken);
-
-        baseMetadata.attributes.push(
-          { trait_type: "Total Shares", value: 1000 },
-          { trait_type: "Price Per Share", value: propertyData.price / 1000 },
-          { trait_type: "Property Token", value: propertyToken || "" },
-        );
-
-        baseMetadata.properties = {
-          ...baseMetadata.properties,
-        };
-
-        console.log("Fractional metadata added:", baseMetadata);
-      }
 
       console.log("Final metadata:", baseMetadata);
       return baseMetadata;

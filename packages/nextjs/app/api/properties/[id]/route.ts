@@ -33,10 +33,10 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
     const body = await request.json();
 
-    // Merge the existing properties with the updated price
+    // Merge the existing properties with the updated fields
     const updatedProperties = {
       ...(currentProperty.properties as any), // Cast to any to avoid TS issues with dynamic properties
-      price: Number(body.price),
+      ...body, // This will merge all fields from the request body
     };
 
     // Update the property with merged data
