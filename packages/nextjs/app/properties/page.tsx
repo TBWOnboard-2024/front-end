@@ -12,8 +12,9 @@ interface Property {
   tokenId: string;
   name: string;
   image: string;
-  attributes: {
+  properties: {
     rooms: number;
+    title: string;
     bathrooms: number;
     location: string;
     usableSurface: number;
@@ -22,10 +23,6 @@ interface Property {
       lat: number;
       lng: number;
     };
-  };
-  properties: {
-    images: string[];
-    title: string;
   };
 }
 
@@ -62,9 +59,11 @@ export default function PropertiesPage() {
   // Calculate map center based on property coordinates
   const defaultCenter = { lat: 25.033, lng: 121.565 }; // Default to Taipei
   const mapCenter =
-    properties.length > 0 && properties[0].attributes.coordinates
-      ? properties[0].attributes.coordinates
+    properties.length > 0 && properties[0].properties.coordinates
+      ? properties[0].properties.coordinates
       : defaultCenter;
+
+  console.log(properties);
 
   return (
     <div className="flex h-[calc(100vh-4rem)]">
@@ -75,16 +74,7 @@ export default function PropertiesPage() {
           {properties.map(property => (
             <PropertyCard
               key={property.tokenId}
-              property={{
-                id: property.tokenId,
-                title: property.properties.title || property.name,
-                size: property.attributes.usableSurface,
-                bedrooms: property.attributes.rooms,
-                bathrooms: property.attributes.bathrooms,
-                address: property.attributes.location,
-                coordinates: property.attributes.coordinates || defaultCenter,
-                imageUrl: property.image,
-              }}
+              property={property}
               onClick={() => setSelectedProperty(property.tokenId)}
               isSelected={selectedProperty === property.tokenId}
             />
@@ -105,9 +95,9 @@ export default function PropertiesPage() {
             <PropertyMarkers
               properties={properties.map(p => ({
                 id: p.tokenId,
-                title: p.properties.title || p.name,
-                price: p.properties.price,
-                coordinates: p.attributes.coordinates || defaultCenter,
+                title: p.name,
+                price: 0,
+                coordinates: p.properties.coordinates || defaultCenter,
               }))}
               selectedPropertyId={selectedProperty}
               onMarkerClick={id => setSelectedProperty(id)}

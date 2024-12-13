@@ -1,19 +1,24 @@
 import Image from "next/image";
 import Link from "next/link";
+import { useScaffoldReadContract } from "../hooks/scaffold-eth";
 
 interface Property {
   id: string;
-  title: string;
-
-  size: number;
-  bedrooms: number;
-  bathrooms: number;
-  address: string;
-  coordinates: {
-    lat: number;
-    lng: number;
+  tokenId: string;
+  name: string;
+  image: string;
+  properties: {
+    rooms: number;
+    title: string;
+    bathrooms: number;
+    location: string;
+    usableSurface: number;
+    propertyType: string;
+    coordinates?: {
+      lat: number;
+      lng: number;
+    };
   };
-  imageUrl: string;
 }
 
 interface PropertyCardProps {
@@ -23,6 +28,25 @@ interface PropertyCardProps {
 }
 
 export const PropertyCard = ({ property, onClick, isSelected }: PropertyCardProps) => {
+  console.log(property.tokenId);
+  const { data: getProperty } = useScaffoldReadContract({
+    contractName: "Marketplace",
+    functionName: "getMarketItem",
+    args: [BigInt(property.tokenId)],
+  });
+  const { data: getPropertyShared } = useScaffoldReadContract({
+    contractName: "Marketplace_Fractional",
+    functionName: "getMarketItem",
+    args: [BigInt(property.tokenId)],
+  });
+
+  let price = (BigInt(getProperty?.price || 0) / BigInt(10 ** 18)).toLocaleString();
+
+  if (price === "0") {
+    price = (BigInt(getPropertyShared?.price || 0) / BigInt(10 ** 18)).toLocaleString();
+  }
+
+  console.log(price);
   return (
     <div
       className={`card card-compact bg-base-100 shadow-xl cursor-pointer transition-all hover:shadow-2xl ${
@@ -32,27 +56,25 @@ export const PropertyCard = ({ property, onClick, isSelected }: PropertyCardProp
     >
       <figure className="h-48 relative">
         <Image
-          src={property.imageUrl}
-          alt={property.title}
+          src={property.image}
+          alt={property.name}
           width={1000}
           height={1000}
           className="w-full h-full object-cover"
         />
-        <div className="absolute top-2 right-2 badge badge-primary text-lg font-bold">
-          {/* ${property.price.toLocaleString()} */}
-        </div>
+        <div className="absolute top-2 right-2 badge badge-primary text-lg font-bold">{price} tBUSD</div>
       </figure>
       <div className="card-body">
-        <h2 className="card-title">{property.title}</h2>
-        <p className="text-sm text-base-content/70">{property.address}</p>
+        <h2 className="card-title">{property.name}</h2>
+        <p className="text-sm text-base-content/70">{property.properties.location}</p>
         <div className="flex justify-between mt-2 text-sm">
-          <span>{property.size} m²</span>
-          <span>{property.bedrooms} beds</span>
-          <span>{property.bathrooms} baths</span>
+          <span>{property.properties.usableSurface} m²</span>
+          <span>{property.properties.rooms} beds</span>
+          <span>{property.properties.bathrooms} baths</span>
         </div>
         <div className="card-actions justify-end mt-2">
           <Link
-            href={`/properties/${property.id}`}
+            href={`/properties/${property.tokenId}`}
             className="btn btn-primary btn-sm"
             onClick={e => e.stopPropagation()} // Prevent triggering the parent onClick
           >

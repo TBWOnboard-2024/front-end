@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { PropertyType } from "../../../types/all-types";
 import { Bath, BedSingle, Ruler } from "lucide-react";
 import { parseEther } from "viem";
 import { useAccount } from "wagmi";
@@ -250,7 +251,8 @@ export default function PropertyDetails({ params }: { params: { slug: string } }
         </div>
         {/* Property Details */}
         <div className="space-y-6">
-          <h1 className="text-4xl font-bold">{property.properties.title}</h1>
+          <h1 className="text-4xl font-bold">{property.name}</h1>
+          <h2 className="text-2xl font-bold">{property.properties.title}</h2>
           <p className="text-2xl font-bold text-primary">
             {!isFractional
               ? (BigInt(getProperty?.price || 0) / BigInt(10 ** 18)).toLocaleString()
@@ -279,7 +281,7 @@ export default function PropertyDetails({ params }: { params: { slug: string } }
           <div className="flex flex-col gap-2 bg-base-100 p-4 rounded-lg">
             <div className="flex items-center gap-2">
               <span className="font-semibold">Type:</span>
-              <span className="text-gray-600">{property.properties.propertyType}</span>
+              <span className="text-gray-600">{PropertyType[Number(property.properties.propertyType)]}</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="font-semibold">Ownership:</span>
