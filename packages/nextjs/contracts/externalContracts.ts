@@ -18,6 +18,11 @@ const externalContracts = {
       abi: [
         {
           inputs: [],
+          stateMutability: "nonpayable",
+          type: "constructor",
+        },
+        {
+          inputs: [],
           name: "AccessControlBadConfirmation",
           type: "error",
         },
@@ -35,6 +40,53 @@ const externalContracts = {
             },
           ],
           name: "AccessControlUnauthorizedAccount",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "EnforcedPause",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "ExpectedPause",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "InvalidInitialization",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "NotInitializing",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "owner",
+              type: "address",
+            },
+          ],
+          name: "OwnableInvalidOwner",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "account",
+              type: "address",
+            },
+          ],
+          name: "OwnableUnauthorizedAccount",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "ReentrancyGuardReentrantCall",
           type: "error",
         },
         {
@@ -198,9 +250,9 @@ const externalContracts = {
           inputs: [
             {
               indexed: false,
-              internalType: "uint8",
+              internalType: "uint64",
               name: "version",
-              type: "uint8",
+              type: "uint64",
             },
           ],
           name: "Initialized",
@@ -1306,6 +1358,11 @@ const externalContracts = {
       abi: [
         {
           inputs: [],
+          stateMutability: "nonpayable",
+          type: "constructor",
+        },
+        {
+          inputs: [],
           name: "AccessControlBadConfirmation",
           type: "error",
         },
@@ -1326,13 +1383,55 @@ const externalContracts = {
           type: "error",
         },
         {
+          inputs: [],
+          name: "EnforcedPause",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "ExpectedPause",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "InvalidInitialization",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "NotInitializing",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "owner",
+              type: "address",
+            },
+          ],
+          name: "OwnableInvalidOwner",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "account",
+              type: "address",
+            },
+          ],
+          name: "OwnableUnauthorizedAccount",
+          type: "error",
+        },
+        {
           anonymous: false,
           inputs: [
             {
               indexed: false,
-              internalType: "uint8",
+              internalType: "uint64",
               name: "version",
-              type: "uint8",
+              type: "uint64",
             },
           ],
           name: "Initialized",
@@ -1603,6 +1702,108 @@ const externalContracts = {
         {
           inputs: [
             {
+              internalType: "uint256[]",
+              name: "_tokenId",
+              type: "uint256[]",
+            },
+          ],
+          name: "getBatchMarketItem",
+          outputs: [
+            {
+              components: [
+                {
+                  internalType: "address",
+                  name: "seller",
+                  type: "address",
+                },
+                {
+                  internalType: "uint256",
+                  name: "price",
+                  type: "uint256",
+                },
+                {
+                  internalType: "address",
+                  name: "propertyToken",
+                  type: "address",
+                },
+                {
+                  internalType: "uint256",
+                  name: "pricePerShare",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "sharesAvailable",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "timeListed",
+                  type: "uint256",
+                },
+              ],
+              internalType: "struct FractionalOwnershipMarketplace.MarketItem[]",
+              name: "",
+              type: "tuple[]",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_tokenId",
+              type: "uint256",
+            },
+          ],
+          name: "getMarketItem",
+          outputs: [
+            {
+              components: [
+                {
+                  internalType: "address",
+                  name: "seller",
+                  type: "address",
+                },
+                {
+                  internalType: "uint256",
+                  name: "price",
+                  type: "uint256",
+                },
+                {
+                  internalType: "address",
+                  name: "propertyToken",
+                  type: "address",
+                },
+                {
+                  internalType: "uint256",
+                  name: "pricePerShare",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "sharesAvailable",
+                  type: "uint256",
+                },
+                {
+                  internalType: "uint256",
+                  name: "timeListed",
+                  type: "uint256",
+                },
+              ],
+              internalType: "struct FractionalOwnershipMarketplace.MarketItem",
+              name: "",
+              type: "tuple",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
               internalType: "bytes32",
               name: "role",
               type: "bytes32",
@@ -1636,6 +1837,19 @@ const externalContracts = {
             },
           ],
           stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "_minter",
+              type: "address",
+            },
+          ],
+          name: "grantListerRole",
+          outputs: [],
+          stateMutability: "nonpayable",
           type: "function",
         },
         {

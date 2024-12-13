@@ -4,7 +4,7 @@ import Link from "next/link";
 interface Property {
   id: string;
   title: string;
-  price: number;
+
   size: number;
   bedrooms: number;
   bathrooms: number;
@@ -39,7 +39,7 @@ export const PropertyCard = ({ property, onClick, isSelected }: PropertyCardProp
           className="w-full h-full object-cover"
         />
         <div className="absolute top-2 right-2 badge badge-primary text-lg font-bold">
-          ${property.price.toLocaleString()}
+          {/* ${property.price.toLocaleString()} */}
         </div>
       </figure>
       <div className="card-body">

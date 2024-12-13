@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Bath, BedSingle, Ruler } from "lucide-react";
 import { parseEther } from "viem";
 import { useAccount } from "wagmi";
+import { Address } from "~~/components/scaffold-eth";
 import { MARKETPLACE_CONTRACT } from "~~/contracts/const";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
@@ -15,20 +16,23 @@ interface Property {
   name: string;
   description: string;
   image: string;
-  isShared: boolean;
-  canBid: boolean;
-  totalShares: number;
-  pricePerShare: number;
-  propertyToken: string;
-  properties: {
-    title: string;
-    price: number;
+  attributes: {
     rooms: number;
     bathrooms: number;
     location: string;
     usableSurface: number;
-    seller: string;
-    canBid: boolean;
+    propertyType: string;
+    ownershipType: string;
+  };
+  properties: {
+    image: string[];
+    title: string;
+    rooms: number;
+    bathrooms: number;
+    location: string;
+    usableSurface: number;
+    propertyType: string;
+    ownershipType: string;
   };
 }
 
@@ -47,11 +51,6 @@ export default function PropertyDetails({ params }: { params: { slug: string } }
   const { writeContractAsync: tBUSDWrite } = useScaffoldWriteContract("tBUSD");
 
   // Marketplace Contract writes
-  const { data: allowance } = useScaffoldReadContract({
-    contractName: "tBUSD",
-    functionName: "allowance",
-    args: [address, MARKETPLACE_CONTRACT],
-  });
 
   const buyProperty = async () => {
     const price = parseEther(property?.properties.price.toString() || "0");
@@ -127,7 +126,7 @@ export default function PropertyDetails({ params }: { params: { slug: string } }
   const placeBid = async () => {
     await marketplaceWrite({
       functionName: "placeBid",
-      args: [BigInt(params.slug), BigInt(bidAmount)],
+      args: [BigInt(params.slug), parseEther(bidAmount)],
     });
   };
 
@@ -153,10 +152,32 @@ export default function PropertyDetails({ params }: { params: { slug: string } }
   };
 
   // Marketplace Contract reads
+
+  const { data: getProperty } = useScaffoldReadContract({
+    contractName: "Marketplace",
+    functionName: "getMarketItem",
+    args: [BigInt(params.slug)],
+  });
+
+  const { data: getPropertyShared } = useScaffoldReadContract({
+    contractName: "Marketplace_Fractional",
+    functionName: "getMarketItem",
+    args: [BigInt(params.slug)],
+  });
+
+  console.log("getProperty", getProperty);
+  console.log("getPropertyShared", getPropertyShared);
+
   const { data: getDownPayment } = useScaffoldReadContract({
     contractName: "Marketplace",
     functionName: "getDownPayment",
     args: [BigInt(params.slug)],
+  });
+
+  const { data: allowance } = useScaffoldReadContract({
+    contractName: "tBUSD",
+    functionName: "allowance",
+    args: [address, MARKETPLACE_CONTRACT],
   });
 
   const { data: getMonthlyPayment } = useScaffoldReadContract({
@@ -203,7 +224,7 @@ export default function PropertyDetails({ params }: { params: { slug: string } }
     return <div className="text-center py-10">Property not found</div>;
   }
 
-  const isOwner = address && property?.properties.seller === address;
+  const isOwner = address && getProperty?.seller === address;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -218,11 +239,12 @@ export default function PropertyDetails({ params }: { params: { slug: string } }
             className="w-full h-full object-cover"
           />
         </div>
-
         {/* Property Details */}
         <div className="space-y-6">
           <h1 className="text-4xl font-bold">{property.properties.title}</h1>
-          <p className="text-2xl text-primary">{property.properties.price.toLocaleString()} tBUSD</p>
+          <p className="text-2xl font-bold text-primary">
+            {(BigInt(getProperty?.price || 0) / BigInt(10 ** 18)).toLocaleString()} tBUSD
+          </p>
 
           <div className="grid grid-cols-3 gap-4">
             <div className="stat-box">
@@ -242,7 +264,20 @@ export default function PropertyDetails({ params }: { params: { slug: string } }
             </div>
           </div>
 
-          <p className="text-gray-600">{property.description}</p>
+          <div className="flex flex-col gap-2 bg-base-100 p-4 rounded-lg">
+            <div className="flex items-center gap-2">
+              <span className="font-semibold">Type:</span>
+              <span className="text-gray-600">{property.properties.propertyType}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="font-semibold">Ownership:</span>
+              <span className="text-gray-600">{property.properties.ownershipType}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="font-semibold">Location:</span>
+              <span className="text-gray-600">{property.properties.location}</span>
+            </div>
+          </div>
 
           {/* Payment Information Section */}
           {getDownPayment && getMonthlyPayment && (
@@ -264,13 +299,13 @@ export default function PropertyDetails({ params }: { params: { slug: string } }
           {/* Action Buttons */}
           <div className="space-y-4">
             {/* Regular Purchase Options */}
-            {!isOwner && (
+            {!isOwner && getProperty && (
               <div className="flex flex-col gap-3">
                 <button onClick={buyProperty} className="btn btn-primary w-full">
-                  Buy Now
+                  Buy Now 💸
                 </button>
                 <button onClick={buyWithInstallment} className="btn btn-secondary w-full">
-                  Buy with Installments
+                  Buy with Installments 💸
                 </button>
               </div>
             )}
@@ -287,23 +322,47 @@ export default function PropertyDetails({ params }: { params: { slug: string } }
                     className="input input-bordered flex-1"
                   />
                   <button onClick={updatePrice} className="btn btn-primary">
-                    Update Price
+                    Update Price ✏️
                   </button>
                 </div>
                 <button onClick={cancelSelling} className="btn btn-error w-full">
-                  Cancel Selling
+                  Cancel Selling 🚫
                 </button>
-                {property.canBid && (
-                  <button onClick={acceptBid} className="btn btn-success w-full">
-                    Accept Current Bid
-                  </button>
+                {getProperty?.canBid && (
+                  <div className="flex flex-col md:flex-row items-center gap-4 p-4 bg-base-200 rounded-lg">
+                    <div className="flex-1">
+                      <p className="text-sm text-base-content/70">Current Bid</p>
+                      <p className="text-xl font-bold">
+                        {(Number(getProperty?.highestBid) / 10 ** 18).toFixed(2)} tBUSD
+                      </p>
+                    </div>
+                    <div className="flex-shrink-0">
+                      <p className="text-sm text-base-content/70 mb-1">Highest Bidder</p>
+                      <Address address={getProperty?.highestBidder} />
+                    </div>
+                    <button
+                      onClick={acceptBid}
+                      disabled={Number(getProperty?.highestBid) / 10 ** 18 <= Number(0)}
+                      className="btn btn-success w-full md:w-auto"
+                    >
+                      Accept 💸
+                    </button>
+                  </div>
                 )}
               </div>
             )}
 
             {/* Bidding Section */}
-            {property.canBid && !isOwner && (
+            {getProperty?.canBid && !isOwner && (
               <div className="space-y-3">
+                <div className="flex items-center gap-4 w-full justify-between">
+                  <p className="text-lg">
+                    Highest Bid:{" "}
+                    <span className="font-bold">{(Number(getProperty?.highestBid) / 10 ** 18).toFixed(2)} tBUSD</span>
+                  </p>
+                  <Address address={getProperty?.highestBidder} />
+                </div>
+
                 <div className="flex gap-3">
                   <input
                     type="number"
@@ -313,11 +372,11 @@ export default function PropertyDetails({ params }: { params: { slug: string } }
                     className="input input-bordered flex-1"
                   />
                   <button onClick={placeBid} className="btn btn-primary">
-                    Place Bid
+                    Place Bid ✋
                   </button>
                 </div>
                 <button onClick={withdrawBid} className="btn btn-warning w-full">
-                  Withdraw Bid
+                  Withdraw Bid 🚫
                 </button>
               </div>
             )}
@@ -334,16 +393,16 @@ export default function PropertyDetails({ params }: { params: { slug: string } }
                     className="input input-bordered flex-1"
                   />
                   <button onClick={buyPropertyShare} className="btn btn-accent">
-                    Buy Shares
+                    Buy Shares 💸
                   </button>
                 </div>
               </div>
             )}
 
             {/* Payment Button */}
-            <button onClick={makePayment} className="btn btn-info w-full">
+            {/* <button onClick={makePayment} className="btn btn-info w-full">
               Make Monthly Payment
-            </button>
+            </button> */}
           </div>
         </div>
       </div>

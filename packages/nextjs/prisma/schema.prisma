@@ -15,6 +15,7 @@ model Properties {
   image           String
   attributes      Json
   properties      Json
+  listed          Boolean  @default(true)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }

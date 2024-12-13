@@ -76,6 +76,12 @@ export class PinataService {
         properties: {
           images: imageUrls,
           title: propertyData.title,
+          usableSurface: propertyData.usableSurface,
+          rooms: propertyData.rooms,
+          bathrooms: propertyData.bathrooms,
+          location: propertyData.location,
+          propertyType: propertyData.propertyType,
+          ownershipType: propertyData.isShared ? "Fractional" : "Whole",
         },
       };
 

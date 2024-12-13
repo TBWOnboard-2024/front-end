@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useScaffoldReadContract } from "../../hooks/scaffold-eth";
 import { useAccount } from "wagmi";
 import { NewPropertyCard } from "~~/components/NewPropertyCard";
 import { TBUSDMintButton } from "~~/components/scaffold-eth/TBUSDMintButton";
@@ -10,21 +11,18 @@ interface Property {
   tokenId: string;
   name: string;
   image: string;
-  properties: {
-    title: string;
-    price: number;
+  attributes: {
     rooms: number;
     bathrooms: number;
     location: string;
     usableSurface: number;
-    seller: string;
-    listed: boolean;
   };
 }
 
 export default function MyProperties() {
   const { address } = useAccount();
   const [listedProperties, setListedProperties] = useState<Property[]>([]);
+  const [ownedProperties, setOwnedProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -34,13 +32,6 @@ export default function MyProperties() {
       try {
         const response = await fetch("/api/properties");
         const allProperties = await response.json();
-
-        // Filter properties based on seller address and listing status
-        const userProperties = allProperties.filter(
-          (property: Property) => property.properties.seller?.toLowerCase() === address.toLowerCase(),
-        );
-
-        setListedProperties(userProperties.filter((property: Property) => property.properties));
       } catch (error) {
         console.error("Error fetching properties:", error);
       } finally {
@@ -53,9 +44,7 @@ export default function MyProperties() {
 
   if (!address) {
     return (
-      <div className="flex justify-center items-center min-h-[60vh]">
-        <div className="loading loading-spinner loading-lg"></div>
-      </div>
+      <div className="flex justify-center items-center min-h-[60vh]">Connect your wallet to view your properties</div>
     );
   }
 
@@ -72,13 +61,13 @@ export default function MyProperties() {
       {/* TBUSD Section */}
       <div className="mb-8">
         <div className="bg-base-200 rounded-lg p-6">
-          <h2 className="text-2xl font-bold mb-4">tBUSD Balance & Minting</h2>
+          <h2 className="text-2xl font-bold mb-4">Mint some tBUSD</h2>
           <TBUSDMintButton />
         </div>
       </div>
 
       {/* Listed Properties Section */}
-      <div className="mb-12">
+      {/* <div className="mb-12">
         <h1 className="text-4xl font-bold mb-8">Listed Properties</h1>
         {listedProperties.length === 0 ? (
           <div className="text-center py-8 bg-base-200 rounded-lg">
@@ -101,11 +90,11 @@ export default function MyProperties() {
             ))}
           </div>
         )}
-      </div>
+      </div> */}
 
       {/* Owned Properties Section */}
 
-      <div className="mb-12">
+      {/* <div className="mb-12">
         <h1 className="text-4xl font-bold mb-8">Owned Properties</h1>
         {listedProperties.length === 0 ? (
           <div className="text-center py-8 bg-base-200 rounded-lg">
@@ -128,7 +117,7 @@ export default function MyProperties() {
             ))}
           </div>
         )}
-      </div>
+      </div> */}
     </div>
   );
 }
