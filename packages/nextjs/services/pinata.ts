@@ -64,7 +64,7 @@ export class PinataService {
       const baseMetadata = {
         name: `Real Estate NFT #${tokenId}`,
         description: propertyData.description || "This NFT represents ownership of a real-world property.",
-        image: imageUrls[0], // Use first image as main image
+        image: imageUrls[0],
         attributes: [
           { trait_type: "Area (sqm)", value: propertyData.usableSurface },
           { trait_type: "Number of Rooms", value: propertyData.rooms },
@@ -87,7 +87,6 @@ export class PinataService {
       };
 
       console.log("Base metadata created:", baseMetadata);
-
       console.log("Final metadata:", baseMetadata);
       return baseMetadata;
     } catch (error) {

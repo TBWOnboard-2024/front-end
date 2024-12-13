@@ -39,6 +39,9 @@ export async function GET(request: Request) {
             in: idArray.map(String),
           },
         },
+        orderBy: {
+          createdAt: "desc",
+        },
       });
 
       if (properties.length === 0) {
@@ -59,7 +62,11 @@ export async function GET(request: Request) {
     }
 
     // If no IDs provided, fetch all properties
-    const properties = await prisma.properties.findMany();
+    const properties = await prisma.properties.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
     return NextResponse.json(properties);
   } catch (error) {
     console.error("Error fetching properties:", error);

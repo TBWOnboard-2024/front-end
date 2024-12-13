@@ -54,22 +54,28 @@ export default function ListPropertyPage() {
             return;
           }
 
+          // Add coordinates to form data
+          const formWithCoordinates = {
+            ...form,
+            coordinates,
+          };
+
           // Upload images to Pinata
           console.log("Uploading images:", form.images);
           const imageUrls = await pinataService.uploadImages(form.images);
           console.log("Image URLs received:", imageUrls);
 
-          // Generate metadata with propertyToken
+          // Generate metadata with coordinates
           console.log("Generating metadata with:", {
             tokenId: tokenId?.toString(),
-            form,
+            formWithCoordinates,
             imageUrls,
             propertyToken: propertyToken?.toString(),
           });
 
           const metadata = pinataService.generateMetadata(
             tokenId?.toString() || "",
-            form,
+            formWithCoordinates,
             imageUrls,
             lister,
             propertyToken?.toString(),
@@ -97,12 +103,6 @@ export default function ListPropertyPage() {
             body: JSON.stringify({
               tokenId: tokenId?.toString(),
               ...metadata,
-              isShared: true,
-              seller: lister,
-              canBid: form.canBid,
-              totalShares: 1000,
-              pricePerShare: Number(pricePerShare),
-              propertyToken: propertyToken?.toString(),
             }),
           });
 
@@ -154,14 +154,32 @@ export default function ListPropertyPage() {
           const loadingToastId = notification.loading("Uploading property metadata to IPFS...");
           console.log("Current form state:", form);
 
+          // Get coordinates from address
+          const coordinates = await geocodingService.getCoordinates(form.location);
+          if (!coordinates) {
+            notification.error("Failed to get coordinates for the provided address");
+            return;
+          }
+
+          // Add coordinates to form data
+          const formWithCoordinates = {
+            ...form,
+            coordinates,
+          };
+
           // Upload images to Pinata
           console.log("Uploading images:", form.images);
           const imageUrls = await pinataService.uploadImages(form.images);
           console.log("Image URLs received:", imageUrls);
 
           // Generate metadata
-          console.log("Generating metadata with:", { tokenId: tokenId?.toString(), form, imageUrls });
-          const metadata = pinataService.generateMetadata(tokenId?.toString() || "", form, imageUrls, seller);
+          console.log("Generating metadata with:", { tokenId: tokenId?.toString(), formWithCoordinates, imageUrls });
+          const metadata = pinataService.generateMetadata(
+            tokenId?.toString() || "",
+            formWithCoordinates,
+            imageUrls,
+            seller,
+          );
           console.log("Generated metadata:", metadata);
 
           // Upload metadata to Pinata

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useScaffoldReadContract } from "../hooks/scaffold-eth";
+import { Bath, BedSingle, Ruler } from "lucide-react";
 
 interface Property {
   id: string;
@@ -50,7 +51,7 @@ export const PropertyCard = ({ property, onClick, isSelected }: PropertyCardProp
   return (
     <div
       className={`card card-compact bg-base-100 shadow-xl cursor-pointer transition-all hover:shadow-2xl ${
-        isSelected ? "ring-2 ring-primary" : ""
+        isSelected ? "ring-2 ring-red-500" : ""
       }`}
       onClick={onClick}
     >
@@ -66,11 +67,21 @@ export const PropertyCard = ({ property, onClick, isSelected }: PropertyCardProp
       </figure>
       <div className="card-body">
         <h2 className="card-title">{property.name}</h2>
+        <h2 className="card-title">{property.properties.title}</h2>
         <p className="text-sm text-base-content/70">{property.properties.location}</p>
         <div className="flex justify-between mt-2 text-sm">
-          <span>{property.properties.usableSurface} m²</span>
-          <span>{property.properties.rooms} beds</span>
-          <span>{property.properties.bathrooms} baths</span>
+          <span className="text-lg flex items-center gap-2">
+            <Ruler />
+            {property.properties.usableSurface}
+          </span>
+          <span className="text-lg flex items-center gap-2">
+            <BedSingle />
+            {property.properties.rooms}
+          </span>
+          <span className="text-lg flex items-center gap-2">
+            <Bath />
+            {property.properties.bathrooms}
+          </span>
         </div>
         <div className="card-actions justify-end mt-2">
           <Link
