@@ -45,6 +45,8 @@ export default function PropertyDetails({ params }: { params: { slug: string } }
   const [newPrice, setNewPrice] = useState<string>("");
   const [shareAmount, setShareAmount] = useState<string>("");
 
+  const isFractional = property?.properties.ownershipType == "Fractional";
+
   // Contract writes
   const { writeContractAsync: marketplaceWrite } = useScaffoldWriteContract("Marketplace");
   const { writeContractAsync: fractionalMarketplaceWrite } = useScaffoldWriteContract("Marketplace_Fractional");
@@ -121,6 +123,11 @@ export default function PropertyDetails({ params }: { params: { slug: string } }
       functionName: "cancelSelling",
       args: [BigInt(params.slug)],
     });
+
+    await fetch(`/api/properties/${params.slug}`, {
+      method: "PUT",
+      body: JSON.stringify({ listed: false }),
+    });
   };
 
   const placeBid = async () => {
@@ -165,9 +172,6 @@ export default function PropertyDetails({ params }: { params: { slug: string } }
     args: [BigInt(params.slug)],
   });
 
-  console.log("getProperty", getProperty);
-  console.log("getPropertyShared", getPropertyShared);
-
   const { data: getDownPayment } = useScaffoldReadContract({
     contractName: "Marketplace",
     functionName: "getDownPayment",
@@ -190,8 +194,10 @@ export default function PropertyDetails({ params }: { params: { slug: string } }
   const buyPropertyShare = async () => {
     await fractionalMarketplaceWrite({
       functionName: "buyPropertyShare",
-      args: [BigInt(params.slug), BigInt(0)],
+      args: [BigInt(params.slug), parseEther(shareAmount)],
     });
+    notification.success("Shares purchased successfully!");
+    setShareAmount("");
   };
 
   useEffect(() => {
@@ -225,6 +231,7 @@ export default function PropertyDetails({ params }: { params: { slug: string } }
   }
 
   const isOwner = address && getProperty?.seller === address;
+  const fractionSeller = address && getPropertyShared?.seller === address;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -243,7 +250,10 @@ export default function PropertyDetails({ params }: { params: { slug: string } }
         <div className="space-y-6">
           <h1 className="text-4xl font-bold">{property.properties.title}</h1>
           <p className="text-2xl font-bold text-primary">
-            {(BigInt(getProperty?.price || 0) / BigInt(10 ** 18)).toLocaleString()} tBUSD
+            {!isFractional
+              ? (BigInt(getProperty?.price || 0) / BigInt(10 ** 18)).toLocaleString()
+              : (BigInt(getPropertyShared?.price || 0) / BigInt(10 ** 18)).toLocaleString()}{" "}
+            tBUSD
           </p>
 
           <div className="grid grid-cols-3 gap-4">
@@ -299,7 +309,7 @@ export default function PropertyDetails({ params }: { params: { slug: string } }
           {/* Action Buttons */}
           <div className="space-y-4">
             {/* Regular Purchase Options */}
-            {!isOwner && getProperty && (
+            {!isOwner && !isFractional && (
               <div className="flex flex-col gap-3">
                 <button onClick={buyProperty} className="btn btn-primary w-full">
                   Buy Now 💸
@@ -381,28 +391,51 @@ export default function PropertyDetails({ params }: { params: { slug: string } }
               </div>
             )}
 
-            {/* Fractional Purchase Section */}
-            {!isOwner && property.isShared && (
-              <div className="space-y-3">
-                <div className="flex gap-3">
-                  <input
-                    type="number"
-                    placeholder="Share Amount"
-                    value={shareAmount}
-                    onChange={e => setShareAmount(e.target.value)}
-                    className="input input-bordered flex-1"
-                  />
-                  <button onClick={buyPropertyShare} className="btn btn-accent">
-                    Buy Shares 💸
-                  </button>
-                </div>
-              </div>
-            )}
-
             {/* Payment Button */}
             {/* <button onClick={makePayment} className="btn btn-info w-full">
               Make Monthly Payment
             </button> */}
+
+            {/* Fractional Purchase Options */}
+            {isFractional && (
+              <div className="space-y-4 p-6 bg-base-200 rounded-xl">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="text-xl font-bold mb-1">Fractional Ownership</h3>
+                    <p className="text-lg font-medium">
+                      {Number(getPropertyShared?.sharesAvailable).toLocaleString()} shares available
+                    </p>
+                    <p className="text-lg">
+                      Price per share:{" "}
+                      <span className="font-medium">{Number(getPropertyShared?.pricePerShare) / 10 ** 18} tBUSD</span>
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-base-content/70 mb-1">Property Token</p>
+                    <Address address={getPropertyShared?.propertyToken} />
+                  </div>
+                </div>
+                {!isOwner && !fractionSeller && (
+                  <div className="flex gap-4">
+                    <input
+                      type="number"
+                      placeholder="Enter number of shares to buy"
+                      value={shareAmount}
+                      onChange={e => setShareAmount(e.target.value)}
+                      className="input input-bordered flex-1"
+                      min="1"
+                    />
+                    <button
+                      onClick={buyPropertyShare}
+                      className="btn btn-primary min-w-[140px]"
+                      disabled={!shareAmount}
+                    >
+                      Buy Shares 💸
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
